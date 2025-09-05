@@ -1,5 +1,36 @@
 {
+  "name": "user-service",
+  "version": "1.0.0",
+  "description": "project user service",
+  "keywords": [
+    "user",
+    "service",
+    "typescript"
+  ],
+  "homepage": "https://github.com/avkor66/user-service#readme",
+  "bugs": {
+    "url": "https://github.com/avkor66/user-service/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avkor66/user-service.git"
+  },
+  "license": "MIT",
+  "author": "artem korotkov",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --rs ./src/index.ts",
+    "build": "rimraf ./dist && tsc --build ./tsconfig.json",
+    "start": "node ./dist/index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
   "devDependencies": {
+    "@types/node": "^24.3.1",
+    "rimraf": "^6.0.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"
   }
 }

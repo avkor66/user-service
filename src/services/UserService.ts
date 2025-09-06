@@ -1,5 +1,5 @@
-import { User } from '../models/User';
-import { IUserCreate, IUserUpdate } from '../interfaces/IUser';
+import { User } from '../models/User.ts';
+import { IUserCreate, IUserUpdate } from '../interfaces/IUser.ts';
 import { Types } from 'mongoose';
 
 export class UserService {

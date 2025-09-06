@@ -1,5 +1,5 @@
 import { Request as Req, Response as Res } from 'express';
-import { UserService } from '../services/UserService';
+import { UserService } from '../services/UserService.ts';
 
 export class UserController {
     static async createUser(req: Req, res: Res) {

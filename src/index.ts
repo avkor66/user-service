@@ -3,11 +3,16 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { config } from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-config({ path: path.resolve(process.cwd(), '../.env') });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const port = process.env.PORT || 3000;
+const router = express.Router();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

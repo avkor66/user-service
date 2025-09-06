@@ -32,8 +32,8 @@ export class UserService {
         };
     }
 
-    static async updateUser(id: string, updateData: IUserUpdate) {
-        return await User.findByIdAndUpdate(id, {new: true, runValidators: true});
+    static async updateUser(id: string, updateUserData: IUserUpdate) {
+        return await User.findByIdAndUpdate(id, updateUserData, {new: true, runValidators: true});
     }
 
     static async deleteUser(id: string) {
@@ -52,10 +52,23 @@ export class UserService {
         );
     }
 
+    static async deactivateUser(id: string) {
+        return await User.findByIdAndUpdate(
+            id,
+            { $set: { isActive: false } },
+            { new: true }
+        );
+    }
+
     static async findByRole(role: 'admin' | 'user') {
         return await User.find({ role, isActive: true });
     }
+
     static async findActiveUsers() {
+        return await User.find({ isActive: true });
+    }
+
+    static async findDeactiveUsers() {
         return await User.find({ isActive: true });
     }
 

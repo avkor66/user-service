@@ -52,7 +52,7 @@ export class UserService {
         );
     }
 
-    static async deactivateUser(id: string) {
+    static async inactivateUser(id: string) {
         return await User.findByIdAndUpdate(
             id,
             { $set: { isActive: false } },

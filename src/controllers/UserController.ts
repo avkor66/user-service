@@ -102,9 +102,9 @@ export class UserController {
         }
     }
 
-    static async deactivateUser(req: Req, res: Res) {
+    static async inactivateUser(req: Req, res: Res) {
         try {
-            const user = await UserService.deactivateUser(req.params.id);
+            const user = await UserService.inactivateUser(req.params.id);
             if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }

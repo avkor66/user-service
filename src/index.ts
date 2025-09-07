@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import router from './routes/UserRoutes.ts';
+import userRoutes from './routes/UserRoutes.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +23,6 @@ async function run() {
     try {
         await mongoose.connect(uri);
         console.log("Успешное подключение к MongoDB!");
-
     } catch (error) {
         console.error("Ошибка подключения:", error);
         process.exit(1);
@@ -31,8 +30,7 @@ async function run() {
 }
 run();
 
-
-app.use('/user', router);
+app.use('/users', userRoutes);
 
 app.listen(port, () => {
     console.info(`Listening at http://localhost:${port}`)

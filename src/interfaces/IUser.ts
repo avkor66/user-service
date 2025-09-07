@@ -10,6 +10,7 @@ export interface IUser extends Document {
     role: 'admin' | 'user';
     isActive: boolean;
     createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface IUserCreate {

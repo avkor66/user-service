@@ -68,8 +68,8 @@ export class UserService {
         return await User.find({ isActive: true });
     }
 
-    static async findDeactiveUsers() {
-        return await User.find({ isActive: true });
+    static async findInactiveUsers() {
+        return await User.find({ isActive: false });
     }
 
     static async isEmailExists(email: string, excludeUserId?: string) {

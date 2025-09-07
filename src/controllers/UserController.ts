@@ -168,9 +168,9 @@ export class UserController {
 
     static async getInactiveUsers(req: Req, res: Res) {
         try {
-            const users = await UserService.findDeactiveUsers();
+            const users = await UserService.findInactiveUsers();
             if (!users) {
-                return res.status(404).json({ error: 'Деактивные пользователи не найдены' });
+                return res.status(404).json({ error: 'Неактивные пользователи не найдены' });
             }
             res.json(users);
         } catch (error) {

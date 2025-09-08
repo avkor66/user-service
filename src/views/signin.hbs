@@ -1,8 +1,13 @@
 <div class="row">
-    <form class="col s6 offset-s3" action="/auth/signin" method="post">
-        <div class="row">
-            <div class="input-field col s12 offset-s9">
-                <button class="btn waves-effect waves-light" type="submit"><a href="/signup" style="text-decoration: none; color: white">Signup</a></button>
+    <form class="col s6 offset-s3" action="/auth/signin" method="post" id="signin-form">
+        <div class="row" style="margin-bottom: 1rem;">
+            <div class="col s6 valign-wrapper">
+                <h4 class="valign-wrapper" style="margin: 0;">Sign In</h4>
+            </div>
+            <div class="col s6 right-align">
+                <button class="btn waves-effect waves-light" type="submit">
+                    <a href="/signup" style="text-decoration: none; color: white">Signup</a>
+                </button>
             </div>
         </div>
         <div class="row">
@@ -14,9 +19,67 @@
                 <input id="password" name="password" type="password" class="validate">
                 <label for="password">Password</label>
             </div>
+            <div class="input-field col s12" style="height: 1rem">
+                <div id="error-message"></div>
+            </div>
         </div>
-        <button class="btn waves-effect waves-light" type="submit">Submit
+        <button class="btn waves-effect waves-light" type="submit" name="action" id="submit" disabled>Submit
             <i class="material-icons right">send</i>
         </button>
     </form>
 </div>
+
+<script>
+    const form = document.getElementById('signin-form');
+    const submit = document.getElementById('submit');
+    const errMsg = document.getElementById('error-message');
+
+    const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    const isValidPassword = (val) => val && val.length >= 6;
+
+    const validateForm = (eventForm) => {
+        const email = form.email.value;
+        const password = form.password.value;
+
+        let valid = true;
+        errMsg.innerHTML = '';
+
+        switch (eventForm) {
+            case "email":
+                if (!isValidEmail(email)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Invalid Email</span>`;
+                    form.email.classList.add('invalid');
+                    form.email.classList.remove('validate');
+                } else {
+                    form.email.classList.add('validate');
+                    form.email.classList.remove('invalid');
+                }
+                break;
+            case "password":
+                form.password.classList.add('validate');
+                form.password.classList.remove('invalid');
+                if (!isValidPassword(password)) {
+                    errMsg.innerHTML = `<span class="message error-message">Password is too short (minimum 6)</span>`;
+                    valid = false;
+                    form.password.classList.add('invalid');
+                    form.password.classList.remove('validate');
+                }
+                break;
+        }
+
+        if (!isValidPassword(password) || !isValidEmail(email)) {
+            valid = false;
+        }
+
+        submit.disabled = !valid;
+    };
+
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('change', (i) => validateForm(i.target.name));
+    });
+
+    form.addEventListener('submit', (e) => {
+        if (submit.disabled) e.preventDefault();
+    });
+</script>

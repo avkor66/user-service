@@ -47,6 +47,9 @@ app.get('/signup', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 
+
+//TO DO exception
+
 app.listen(port, () => {
     console.info(`Listening at http://localhost:${port}`)
 });

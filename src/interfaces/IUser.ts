@@ -11,6 +11,8 @@ export interface IUser extends Document {
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
+    comparePassword(candidatePassword: string): Promise<boolean>;
+    getFullName(): string;
 }
 
 export interface IUserCreate {

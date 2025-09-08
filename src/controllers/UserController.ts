@@ -120,11 +120,11 @@ export class UserController {
 
     static async findByEmail(req: Req, res: Res) {
         try {
-            const users = await UserService.findByEmail(req.params.email);
-            if (!users) {
+            const user = await UserService.findByEmail(req.params.email);
+            if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
-            res.json(users);
+            res.json(user);
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });

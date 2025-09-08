@@ -1,44 +1,206 @@
 <div class="row">
-    <form class="col s6 offset-s3">
-        <div class="row">
-            <div class="input-field col s9 offset-s9">
-                <button class="btn waves-effect waves-light" type="submit" name="action"><a href="/signin" style="text-decoration: none; color: white">Signin</a></button>
+    <form class="col s6 offset-s3" action="/auth/signup" method="post" id="signup-form">
+        <div class="row" style="margin-bottom: 1rem;">
+            <div class="col s6 valign-wrapper">
+                <h4 class="valign-wrapper" style="margin: 0;">Sign Up</h4>
+            </div>
+            <div class="col s6 right-align">
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    <a href="/signin" style="text-decoration: none; color: white">Signin</a>
+                </button>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <input id="first_name" type="text" class="validate">
+                <input id="first_name" type="text" name="firstName" class="validate">
                 <label for="first_name">First Name</label>
             </div>
             <div class="input-field col s12">
-                <input id="last_name" type="text" class="validate">
+                <input id="last_name" type="text" name="lastName" class="validate">
                 <label for="last_name">Last Name</label>
             </div>
             <div class="input-field col s12">
-                <input id="middle_name" type="text" class="validate">
+                <input id="middle_name" type="text" name="middleName" class="validate">
                 <label for="middle_name">Middle Name</label>
             </div>
-
             <div class="input-field col s12">
-                <input id="email" type="email" class="validate">
+                <input id="email" type="email" name="email" class="validate">
                 <label for="email">Email</label>
             </div>
             <div class="input-field col s12">
-                <input id="birthday" type="date" class="validate">
+                <input id="birthday" type="date" name="birthDate" class="validate">
                 <label for="birthday">Date of birth</label>
             </div>
-
             <div class="input-field col s12">
-                <input id="password" type="password" class="validate">
+                <input id="password" type="password" name="password" class="validate password">
                 <label for="password">Password</label>
             </div>
             <div class="input-field col s12">
-                <input id="password_retry" type="password" class="validate">
-                <label for="password_retry">Retry Password</label>
+                <input id="passwordRetry" type="password" name="passwordRetry" class="validate password">
+                <label for="passwordRetry">Retry Password</label>
+            </div>
+            <div class="input-field col s12" style="height: 1rem">
+                <div id="error-message"></div>
             </div>
         </div>
-        <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+
+        <button class="btn waves-effect waves-light" type="submit" name="action" id="submit" disabled>Submit
             <i class="material-icons right">send</i>
         </button>
     </form>
 </div>
+
+<script>
+    const form = document.getElementById('signup-form');
+    const submit = document.getElementById('submit');
+    const errMsg = document.getElementById('error-message');
+
+    const isValidName = (val) => /^[A-Za-zА-яа-яЁё]+$/.test(val) && val.trim().length >= 2;
+    const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    const isValidDate = (val) => {
+        if (!val) return false;
+        const date = new Date(val);
+        const now = new Date();
+        return date.getFullYear() <= now.getFullYear() - 13 && date.getFullYear() >= now.getFullYear() - 100;
+    };
+    const isValidPassword = (val) => val && val.length >= 6;
+    const isPasswordsMatch = (pwd, retry) => pwd === retry;
+
+    const validateForm = (eventForm) => {
+        const firstName = form.firstName.value;
+        const lastName = form.lastName.value;
+        const middleName = form.middleName.value;
+        const email = form.email.value;
+        const birthDate = form.birthDate.value;
+        const password = form.password.value;
+        const retry = form.passwordRetry.value;
+
+        let valid = true;
+        errMsg.innerHTML = '';
+
+        switch (eventForm) {
+            case "firstName":
+                if (!isValidName(firstName)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Invalid last name (at least 2 characters)</span>`;
+                    form.firstName.classList.add('invalid');
+                    form.firstName.classList.remove('validate');
+                } else {
+                    form.firstName.classList.add('validate');
+                    form.firstName.classList.remove('invalid');
+                }
+                break;
+            case "lastName":
+                if (!isValidName(lastName)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Invalid name (at least 2 characters)</span>`;
+                    form.lastName.classList.add('invalid');
+                    form.lastName.classList.remove('validate');
+                } else {
+                    form.lastName.classList.add('validate');
+                    form.lastName.classList.remove('invalid');
+                }
+                break;
+            case "middleName":
+                if (!/^[A-Za-zА-яа-яЁё]+$/.test(middleName)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Incorrect characters in middlename</span>`;
+                    form.middleName.classList.add('invalid');
+                    form.middleName.classList.remove('validate');
+                } else {
+                    form.middleName.classList.add('validate');
+                    form.middleName.classList.remove('invalid');
+                }
+                break;
+            case "email":
+                if (!isValidEmail(email)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Invalid Email</span>`;
+                    form.email.classList.add('invalid');
+                    form.email.classList.remove('validate');
+                } else {
+                    form.email.classList.add('validate');
+                    form.email.classList.remove('invalid');
+                }
+                break;
+            case "birthDate":
+                if (!isValidDate(birthDate)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Invalid date of birth (less than 13 years)</span>`;
+                    form.birthDate.classList.add('invalid');
+                    form.birthDate.classList.remove('validate');
+                } else {
+                    form.birthDate.classList.add('validate');
+                    form.birthDate.classList.remove('invalid');
+                }
+                break;
+            case "password":
+                form.password.classList.add('validate');
+                form.password.classList.remove('invalid');
+                if (!isPasswordsMatch(password, retry)) {
+                    errMsg.innerHTML = `<span class="message error-message">Passwords do not match</span>`;
+                    valid = false;
+                    form.password.classList.add('invalid');
+                    form.password.classList.remove('validate');
+                    form.passwordRetry.classList.add('invalid');
+                    form.passwordRetry.classList.remove('validate');
+                } else {
+                    if (isValidPassword(retry)) {
+                        form.passwordRetry.classList.add('validate');
+                        form.passwordRetry.classList.remove('invalid');
+                    }
+                    form.password.classList.add('validate');
+                    form.password.classList.remove('invalid');
+                }
+                if (!isValidPassword(password)) {
+                    errMsg.innerHTML = `<span class="message error-message">Password is too short (minimum 6)</span>`;
+                    valid = false;
+                    form.password.classList.add('invalid');
+                    form.password.classList.remove('validate');
+                }
+                break;
+            case "passwordRetry":
+                form.passwordRetry.classList.add('validate');
+                form.passwordRetry.classList.remove('invalid');
+                if (!isPasswordsMatch(password, retry)) {
+                    errMsg.innerHTML = `<span class="message error-message">Passwords do not match</span>`;
+                    valid = false;
+                    form.passwordRetry.classList.add('invalid');
+                    form.passwordRetry.classList.remove('validate');
+                    form.password.classList.add('invalid');
+                    form.password.classList.remove('validate');
+                } else {
+                    form.passwordRetry.classList.add('validate');
+                    form.passwordRetry.classList.remove('invalid');
+                    if (isValidPassword(password)) {
+                        form.password.classList.add('validate');
+                        form.password.classList.remove('invalid');
+                    }
+                }
+                if (!isValidPassword(retry)) {
+                    errMsg.innerHTML = `<span class="message error-message">Password is too short (minimum 6)</span>`;
+                    valid = false;
+                    form.passwordRetry.classList.add('invalid');
+                    form.passwordRetry.classList.remove('validate');
+                }
+                break;
+        }
+
+        if (!isValidName(firstName) || !isValidName(lastName) || !isValidEmail(email) || !isValidDate(birthDate)) {
+            valid = false;
+        }
+        if (!isValidPassword(password) || !isValidPassword(retry) || !isPasswordsMatch(password, retry)) {
+             valid = false;
+        }
+
+        submit.disabled = !valid;
+    };
+
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('change', (i) => validateForm(i.target.name));
+    });
+
+    form.addEventListener('submit', (e) => {
+        if (submit.disabled) e.preventDefault();
+    });
+</script>

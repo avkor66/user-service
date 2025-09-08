@@ -1,6 +1,7 @@
 import { User } from '../models/User.ts';
 import { IUserCreate, IUserUpdate } from '../interfaces/IUser.ts';
 import { Types } from 'mongoose';
+import bcrypt from "bcryptjs";
 
 export class UserService {
     static async createUser(userData: IUserCreate) {

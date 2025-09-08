@@ -1,8 +1,7 @@
-import {Request as Req, Response as Res} from "express";
-import bcrypt from 'bcryptjs';
+import { Request as Req, Response as Res } from "express";
 import { User } from '../models/User.ts';
-import {UserService} from "../services/UserService.ts";
-import {IUser} from "../interfaces/IUser.ts";
+import { UserService } from "../services/UserService.ts";
+import {IUser, IUserCreate} from "../interfaces/IUser.ts";
 
 export class AuthController {
     static async authSignin(req: Req, res: Res) {
@@ -21,7 +20,7 @@ export class AuthController {
             if (!isPasswordValid) {
                 throw new Error('Неверный пароль');
             }
-            res.status(200).json("Вы удачно авторизовались");
+            res.status(200).json(user);
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
@@ -33,24 +32,14 @@ export class AuthController {
     static async authSignup(req: Req, res: Res) {
 
         try {
-            const createData: IUser = req.body;
-            if (createData.password) {
-                res.status(400).json({ error: 'Пароли не совпадают' });
+            const createData: IUserCreate = req.body;
+            console.log(createData);
+            createData.role = 'user';
+            if (await UserService.findByEmail(createData.email)) {
+                return res.status(400).json({ error: 'Пользователь с таким Email уже существует' });
             }
-
-            const user = await User.findOne({ email: createData.email });
-            if (!user) {
-                return res.status(400).json({ error: 'Email не найден' });
-            }
-            if (!user.isActive) {
-                throw new Error('Пользователь неактивный');
-            }
-
-            const isPasswordValid = await user.comparePassword(createData.password);
-            if (!isPasswordValid) {
-                throw new Error('Неверный пароль');
-            }
-            res.status(200).json("Вы удачно авторизовались");
+            const user = await UserService.createUser(createData)
+            res.status(200).json(user);
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });

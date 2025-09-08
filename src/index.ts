@@ -35,7 +35,19 @@ async function run() {
 run();
 
 app.get('/', (req, res) => {
-    res.render('home');
+    res.redirect('/signin');
+})
+
+app.get('/signin', (req, res) => {
+    res.render('signin', {
+        title: 'Signin'
+    });
+})
+
+app.get('/signup', (req, res) => {
+    res.render('signup', {
+        title: 'Signup',
+    });
 })
 app.use('/users', userRoutes);
 

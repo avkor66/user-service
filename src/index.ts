@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import userRoutes from './routes/UserRoutes.ts';
 import { engine } from 'express-handlebars';
+import authRoutes from "./routes/AuthRoutes.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -37,18 +38,13 @@ run();
 app.get('/', (req, res) => {
     res.redirect('/signin');
 })
-
 app.get('/signin', (req, res) => {
-    res.render('signin', {
-        title: 'Signin'
-    });
+    res.render('signin', { title: 'Signin' });
 })
-
 app.get('/signup', (req, res) => {
-    res.render('signup', {
-        title: 'Signup',
-    });
+    res.render('signup', { title: 'Signup' });
 })
+app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 
 app.listen(port, () => {

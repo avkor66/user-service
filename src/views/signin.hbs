@@ -1,21 +1,21 @@
 <div class="row">
-    <form class="col s6 offset-s3" action="/signin" method="post">
+    <form class="col s6 offset-s3" action="/auth/signin" method="post">
         <div class="row">
             <div class="input-field col s12 offset-s9">
-                <button class="btn waves-effect waves-light" type="submit" name="action"><a href="/signup" style="text-decoration: none; color: white">Signup</a></button>
+                <button class="btn waves-effect waves-light" type="submit"><a href="/signup" style="text-decoration: none; color: white">Signup</a></button>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <input id="email" type="email" class="validate">
+                <input id="email" name="email" type="email" class="validate">
                 <label for="email">Email</label>
             </div>
             <div class="input-field col s12">
-                <input id="password" type="password" class="validate">
+                <input id="password" name="password" type="password" class="validate">
                 <label for="password">Password</label>
             </div>
         </div>
-        <button class="btn waves-effect waves-light" type="submit" name="action" >Submit
+        <button class="btn waves-effect waves-light" type="submit">Submit
             <i class="material-icons right">send</i>
         </button>
     </form>

@@ -43,8 +43,8 @@ export class AuthController {
             const user = await UserService.createUser(createData)
             res.render('success', {
                 title: 'Registration successful!',
-                message: 'Congratulation! Registration was successful!',
-                description: 'You will be redirected to the login page.',
+                heading: 'Congratulation! Registration was successful!',
+                message: 'You will be redirected to the login page.',
                 path: '/signin',
             })
         } catch (error) {

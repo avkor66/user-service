@@ -1,0 +1,19 @@
+
+<div class="card-title">
+    <h4> {{ message }} </h4>
+    <p>{{ description }}</p>
+    <p class="redirect">Через <span id="counter">3</span> секунды...</p>
+</div>
+
+<script>
+    let count = 30;
+    const counterEl = document.getElementById('counter');
+    const interval = setInterval(() => {
+        count--;
+        counterEl.textContent = count;
+        if (count === 0) {
+            clearInterval(interval);
+            window.location.href = '{{ path }}';
+        }
+    }, 1000);
+</script>

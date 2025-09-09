@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import userRoutes from './routes/UserRoutes.ts';
 import { engine } from 'express-handlebars';
 import authRoutes from "./routes/AuthRoutes.ts";
+import profileRoutes from "./routes/ProfileRoutes.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -44,6 +45,15 @@ app.get('/signin', (req, res) => {
 app.get('/signup', (req, res) => {
     res.render('signup', { title: 'Signup' });
 })
+app.get('/success', (req, res) => {
+    res.render('success', {
+        title: 'Registration successful!',
+        message: 'Congratulation! Registration was successful!',
+        description: 'You will be redirected to the login page.',
+        path: '/signin',
+    })
+})
+app.get('/profile', profileRoutes);
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 

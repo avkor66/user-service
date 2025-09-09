@@ -2,6 +2,10 @@ import { Request as Req, Response as Res } from "express";
 import { User } from '../models/User.ts';
 import { UserService } from "../services/UserService.ts";
 import { IUserCreate } from "../interfaces/IUser.ts";
+import jwt from  "jsonwebtoken";
+import path from "path";
+import {fileURLToPath} from "url";
+import {config} from "dotenv";
 
 export class AuthController {
 
@@ -21,7 +25,20 @@ export class AuthController {
             if (!isPasswordValid) {
                 throw new Error('Incorrect password');
             }
-            res.status(200).json(user);
+
+            const token = jwt.sign({
+                email: user.email,
+                userId: user._id
+            }, process.env.JWT_SECRET!, {expiresIn: 60 * 60 * 24});
+
+            res.cookie("auth_token", token, {
+                httpOnly: true,
+                secure: false, // true для HTTPS
+                sameSite: "strict",
+                maxAge: 24 * 60 * 60 * 1000
+            });
+
+            res.redirect('/profile');
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });

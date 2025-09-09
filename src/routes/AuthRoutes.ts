@@ -6,6 +6,11 @@ const authRoutes = Router();
 authRoutes.post('/signin', AuthController.authSignin);
 authRoutes.post('/signup', AuthController.authSignup);
 authRoutes.get('/logout', (req, res) => {
+    res.clearCookie("auth_token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict"
+    });
     res.render('success', {
         title: 'Logout!',
         heading: 'Logout user.',

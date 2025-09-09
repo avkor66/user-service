@@ -7,6 +7,10 @@ import userRoutes from './routes/UserRoutes.ts';
 import { engine } from 'express-handlebars';
 import authRoutes from "./routes/AuthRoutes.ts";
 import profileRoutes from "./routes/ProfileRoutes.ts";
+import passport from "passport"
+import passportConfig from './middleware/passport.ts';
+import cookieParser from "cookie-parser";
+import configurePassport from "./middleware/passport.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -22,6 +26,7 @@ app.set('views', path.resolve(__dirname, "./views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(cookieParser());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ri8xy.mongodb.net/${process.env.DB_COLLECTION}?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -36,6 +41,9 @@ async function run() {
 }
 run();
 
+app.use(passport.initialize());
+passportConfig(passport);
+
 app.get('/', (req, res) => {
     res.redirect('/signin');
 })
@@ -45,7 +53,7 @@ app.get('/signin', (req, res) => {
 app.get('/signup', (req, res) => {
     res.render('signup', { title: 'Signup' });
 })
-app.use('/profile', profileRoutes);
+app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 

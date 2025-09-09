@@ -3,7 +3,7 @@ import { Router } from 'express';
 const profileRoutes = Router();
 
 profileRoutes.get('/', (req, res) => {
-    res.render('profile');
+    res.render('account');
 });
 
 export default profileRoutes;

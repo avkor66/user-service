@@ -45,15 +45,7 @@ app.get('/signin', (req, res) => {
 app.get('/signup', (req, res) => {
     res.render('signup', { title: 'Signup' });
 })
-app.get('/success', (req, res) => {
-    res.render('success', {
-        title: 'Registration successful!',
-        message: 'Congratulation! Registration was successful!',
-        description: 'You will be redirected to the login page.',
-        path: '/signin',
-    })
-})
-app.get('/profile', profileRoutes);
+app.use('/profile', profileRoutes);
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 

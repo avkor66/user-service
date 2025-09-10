@@ -1,6 +1,6 @@
 import { Request as Req, Response as Res } from 'express';
 import { UserService } from '../services/UserService.ts';
-import {IAuthUser, IUserUpdate} from "../interfaces/IUser.ts";
+import {IAuthUser, IUserCreate, IUserUpdate} from "../interfaces/IUser.ts";
 
 function emptyFieldsObjectDelete(obj: any): any {
     return Object.keys(obj).reduce((acc, key) => {
@@ -14,20 +14,30 @@ function emptyFieldsObjectDelete(obj: any): any {
 export class UserController {
     static async createUser(req: Req, res: Res) {
         try {
-            const userData = req.body;
-
+            const userData: IUserCreate = emptyFieldsObjectDelete(req.body);
             const emailExists = await UserService.isEmailExists(userData.email);
             if (emailExists) {
-                return res.status(400).json({ error: 'Email уже существует' });
+                res.json({
+                    success: false,
+                    message: 'Email already exists'
+                });
             }
-
             const user = await UserService.createUser(userData);
-            res.status(201).json(user);
+            res.json({
+                success: true,
+                message: 'User created'
+            });
         } catch (error) {
             if (error instanceof Error) {
-                res.status(400).json({ error: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message
+                });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown error'
+                });
             }
         }
     }
@@ -61,7 +71,7 @@ export class UserController {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
@@ -79,23 +89,28 @@ export class UserController {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
 
     static async deleteUser(req: Req, res: Res) {
         try {
-            const user = await UserService.deleteUser(req.params.id);
+            const removeUser = req.user as IAuthUser;
+            const user = await UserService.deleteUser(removeUser.id);
             if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
-            res.json(user);
+            res.status(200).json({
+                status: 'success',
+                message: 'User deleted'
+            });
+
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
@@ -111,7 +126,7 @@ export class UserController {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
@@ -127,7 +142,7 @@ export class UserController {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
@@ -143,7 +158,7 @@ export class UserController {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
@@ -159,7 +174,7 @@ export class UserController {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
@@ -175,7 +190,7 @@ export class UserController {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
@@ -191,7 +206,7 @@ export class UserController {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }

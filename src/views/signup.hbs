@@ -27,9 +27,17 @@
                 <input id="email" type="email" name="email" class="validate">
                 <label for="email">Email</label>
             </div>
-            <div class="input-field col s12">
+            <div class="input-field col s7">
                 <input id="birthday" type="date" name="birthDate" class="validate">
                 <label for="birthday">Date of birth</label>
+            </div>
+            <div class="input-field col s5 right-align" style="padding-top: 1rem">
+                <div class="switch">User is admin?
+                    <label>
+                        <input type="checkbox" id="role" name="role">
+                        <span class="lever"></span>
+                    </label>
+                </div>
             </div>
             <div class="input-field col s12">
                 <input id="password" type="password" name="password" class="validate password">
@@ -200,7 +208,43 @@
         input.addEventListener('change', (i) => validateForm(i.target.name));
     });
 
-    form.addEventListener('submit', (e) => {
-        if (submit.disabled) e.preventDefault();
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const signupData = {
+            firstName: form.firstName.value,
+            lastName: form.lastName.value,
+            middleName: form.middleName.value,
+            email: form.email.value,
+            birthDate: form.birthDate.value,
+            role: form.role.checked ? 'admin' : 'user',
+            password: form.password.value
+        }
+        try {
+            const response = await fetch('/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(signupData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+
+                showMessage('success', result.message, result.error);
+                window.location.href = '/signin';
+
+            } else {
+                showMessage('error', result.message, result.error);
+            }
+
+        } catch (error) {
+            showMessage('error', error.message, 'Network error');
+        }
     });
+
+    function showMessage(type, text, err) {
+        errMsg.textContent = text || err;
+        errMsg.className = type;
+    }
 </script>

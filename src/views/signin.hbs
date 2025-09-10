@@ -79,7 +79,38 @@
         input.addEventListener('change', (i) => validateForm(i.target.name));
     });
 
-    form.addEventListener('submit', (e) => {
-        if (submit.disabled) e.preventDefault();
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const loginData = {
+            email: form.email.value,
+            password: form.password.value
+        }
+        try {
+            const response = await fetch('/auth/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+
+                showMessage('success', result.message);
+                window.location.href = '/profile';
+
+            } else {
+                showMessage('error', result.message);
+            }
+
+        } catch (error) {
+            showMessage('error', 'Network error');
+        }
     });
+
+    function showMessage(type, text) {
+        errMsg.textContent = text;
+        errMsg.className = type;
+    }
 </script>

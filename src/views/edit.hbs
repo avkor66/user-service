@@ -101,8 +101,8 @@
         <p>Are you sure you want to delete the user?</p>
     </div>
     <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat">Disagree</a>
+        <a href="#" class="modal-close waves-effect waves-green btn-flat" id="agree">Agree</a>
+        <a href="#" class="modal-close waves-effect waves-red btn-flat">Disagree</a>
     </div>
 </div>
 
@@ -231,4 +231,30 @@
     form.addEventListener('submit', (e) => {
         if (submit.disabled) e.preventDefault();
     });
+
+    const agree = document.getElementById('agree');
+    agree.addEventListener('click', async (e) => {
+        try {
+            const response = await fetch('/users', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+
+                window.location.href = '/';
+
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Network error');
+        }
+    })
+
 </script>

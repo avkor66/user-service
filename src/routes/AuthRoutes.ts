@@ -16,6 +16,7 @@ authRoutes.get('/logout', (req, res) => {
         heading: 'Logout user.',
         message: 'You have logged out of your profile.',
         path: '/',
+        time: 1
     })
 });
 

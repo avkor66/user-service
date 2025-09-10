@@ -5,6 +5,5 @@ const profileRoutes = Router();
 
 profileRoutes.get('/', ProfileController.getProfileData);
 profileRoutes.get('/edit', ProfileController.getProfileDataForEdit);
-profileRoutes.post('/edit', ProfileController.updateProfileUser);
 
 export default profileRoutes;

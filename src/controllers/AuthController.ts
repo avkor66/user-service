@@ -4,6 +4,15 @@ import { UserService } from "../services/UserService.ts";
 import { IUserCreate } from "../interfaces/IUser.ts";
 import jwt from  "jsonwebtoken";
 
+function emptyFieldsObjectDelete(obj: any): any {
+    return Object.keys(obj).reduce((acc, key) => {
+        if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
+            acc[key] = obj[key];
+        }
+        return acc;
+    }, {} as any);
+}
+
 export class AuthController {
 
     static async authSignin(req: Req, res: Res) {
@@ -12,15 +21,24 @@ export class AuthController {
             const authData = req.body;
             const user = await User.findOne({ email: authData.email });
             if (!user) {
-                return res.status(400).json({ error: 'Email not found' });
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email not found'
+                });
             }
             if (!user.isActive) {
-                throw new Error('The user is inactive');
+                res.status(400).json({
+                    success: false,
+                    message: 'The user is inactive',
+                });
             }
 
             const isPasswordValid = await user.comparePassword(authData.password);
             if (!isPasswordValid) {
-                throw new Error('Incorrect password');
+                res.status(400).json({
+                    success: false,
+                    message: 'Password incorrect',
+                });
             }
 
             const token = jwt.sign({
@@ -34,8 +52,11 @@ export class AuthController {
                 sameSite: "strict",
                 maxAge: 24 * 60 * 60 * 1000
             });
+            res.status(200).json({
+                success: true,
+                message: 'Login successful',
+            });
 
-            res.redirect('/profile');
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
@@ -48,24 +69,30 @@ export class AuthController {
     static async authSignup(req: Req, res: Res) {
 
         try {
-            const createData: IUserCreate = req.body;
-            console.log(createData);
-            createData.role = 'user';
-            if (await UserService.findByEmail(createData.email)) {
-                return res.status(400).json({ error: 'A user with this email already exists.' });
+            const userData: IUserCreate = emptyFieldsObjectDelete(req.body);
+            const emailExists = await UserService.isEmailExists(userData.email);
+            if (emailExists) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Email already exists'
+                });
             }
-            const user = await UserService.createUser(createData)
-            res.render('success', {
-                title: 'Registration successful!',
-                heading: 'Congratulation! Registration was successful!',
-                message: 'You will be redirected to the login page.',
-                path: '/signin',
-            })
+            const user = await UserService.createUser(userData);
+            res.status(201).json({
+                success: true,
+                message: 'User created'
+            });
         } catch (error) {
             if (error instanceof Error) {
-                res.status(400).json({ error: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message
+                });
             } else {
-                res.status(400).json({ error: 'Unknown error' });
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown error'
+                });
             }
         }
     }

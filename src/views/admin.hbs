@@ -21,7 +21,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody  class="modal-trigger">
+            <tbody>
                 {{#if users.length}}
                     {{#each users}}
                         <tr>
@@ -144,11 +144,7 @@
             <li>
                 <div class="collapsible-header">
                     Active
-                    {{#if isActive}}
-                        <span class="badge green-text" id="isActive">Yes</span>
-                    {{else}}
-                        <span class="badge red-text">No</span>
-                    {{/if}}
+                    <span class="badge green-text" id="isActive"></span>
                 </div>
             </li>
             <li>
@@ -197,8 +193,6 @@ modals.forEach(modal => {
                 'Content-Type': 'application/json',
             },
         })).json();
-
-        console.log(user);
 
         fullName.innerText = user.fullName;
         email.innerText = user.email;

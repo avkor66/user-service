@@ -2,6 +2,9 @@
     <div class="nav-wrapper">
         <div class="brand-logo" style="margin-left: 3rem; cursor: pointer">Logo</div>
         <ul id="nav" class="right">
+            {{#if isAdmin}}
+                <li><a href="/profile/admin">Admin panel</a></li>
+            {{/if}}
             <li><a href="/profile">Profile</a></li>
             <li><a href="/auth/logout">Logout</a></li>
         </ul>

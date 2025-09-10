@@ -2,6 +2,19 @@ import { Request as Req, Response as Res } from 'express';
 import { UserService } from '../services/UserService.ts';
 import {IAuthUser, IUserCreate, IUserUpdate} from "../interfaces/IUser.ts";
 
+const timeCorrect = (time: number): string => {
+    return time < 10 ? '0' + time.toString() : time.toString();
+};
+const dateEditor = (date: Date, flag: boolean): string => {
+    const newDate = `${timeCorrect(date.getDate())}.${timeCorrect(date.getMonth() + 1)}.${date.getFullYear()}`
+    if (flag) {
+        const newTime = `${timeCorrect(date.getHours())}:${timeCorrect(date.getMinutes() + 1)}:${timeCorrect(date.getSeconds())}`
+        return newDate + ' ' + newTime;
+    } else {
+        return newDate;
+    }
+}
+
 function emptyFieldsObjectDelete(obj: any): any {
     return Object.keys(obj).reduce((acc, key) => {
         if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
@@ -48,7 +61,16 @@ export class UserController {
             if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
-            res.json(user);
+            const newUser = {
+                fullName: `${user.firstName} ${user.lastName} ${user.middleName}`,
+                birthDate: dateEditor(user.birthDate, false),
+                email: user.email,
+                role: user.role,
+                isActive: user.isActive,
+                createdAt: dateEditor(user.createdAt, true),
+                updatedAt: dateEditor(user.updatedAt, true)
+            }
+            res.json(newUser);
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });

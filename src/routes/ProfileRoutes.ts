@@ -1,12 +1,9 @@
 import { Router } from 'express';
+import { ProfileController } from "../controllers/ProfileController.ts";
 
 const profileRoutes = Router();
 
-profileRoutes.get('/', (req, res) => {
-    res.render('profile');
-});
-profileRoutes.get('/edit', (req, res) => {
-    res.render('edit');
-});
+profileRoutes.get('/', ProfileController.getProfileData);
+profileRoutes.get('/edit', ProfileController.getProfileDataForEdit);
 
 export default profileRoutes;

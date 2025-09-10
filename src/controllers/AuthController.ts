@@ -3,9 +3,6 @@ import { User } from '../models/User.ts';
 import { UserService } from "../services/UserService.ts";
 import { IUserCreate } from "../interfaces/IUser.ts";
 import jwt from  "jsonwebtoken";
-import path from "path";
-import {fileURLToPath} from "url";
-import {config} from "dotenv";
 
 export class AuthController {
 

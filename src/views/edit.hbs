@@ -1,20 +1,234 @@
 <nav class="teal lighten-3 z-depth-5">
     <div class="nav-wrapper">
         <div class="brand-logo" style="margin-left: 3rem; cursor: pointer">Logo</div>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-
+        <ul id="nav" class="right">
             <li><a href="/profile">Profile</a></li>
             <li><a href="/auth/logout">Logout</a></li>
         </ul>
     </div>
 </nav>
-<div class="container" style="margin-top: 6rem;">
+<div class="container" style="margin-top: 6rem; width: 40vw">
     <div class="grey lighten-3">
         <h4 class="center-align" style="padding: 0.5rem 0">Edit user profile</h4>
-        <div class="card">
-            <div class="card-content">
-                <span class="card-title">Pages for edit user profile</span>
-            </div>
+        <div class="card z-depth-0">
+            <form action="/profile/edit" method="post" id="edit-form">
+                <ul class="collapsible">
+                    <li>
+                        <div class="collapsible-header">FirstName
+                            <span class="badge">{{firstName}}</span>
+                        </div>
+                        <div class="collapsible-body">
+                            <input id="first_name" type="text" name="firstName" class="validate">
+                            <label for="first_name">To change, enter a new first name value</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">LastName
+                            <span class="badge">{{lastName}}</span>
+                        </div>
+                        <div class="collapsible-body">
+                            <input id="last_name" type="text" name="lastName" class="validate">
+                            <label for="last_name">To change, enter a new last name value</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">MiddleName
+                            <span class="badge">{{middleName}}</span>
+                        </div>
+                        <div class="collapsible-body">
+                            <input id="middle_name" type="text" name="middleName" class="validate">
+                            <label for="middle_name">To change, enter a new middle name value</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">Date of birth
+                            <span class="badge">{{birthDate}}</span>
+                        </div>
+                        <div class="collapsible-body">
+                            <input id="birthday" type="date" name="birthDate" class="validate">
+                            <label for="birthday">To change, enter a new date of birth value</label>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="card z-depth-0">
+                    <li>
+                        <div class="collapsible-header">Email
+                            <span class="badge" style="margin-left: 5rem">{{email}}</span>
+                        </div>
+
+                    </li>
+                    <li>
+                        <div class="collapsible-header">Role
+                            <span class="badge" style="margin-left: 6rem">{{role}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">Active
+                            {{#if isActive}}
+                                <span class="badge green-text" style="margin-left: 5rem">Yes</span>
+                            {{else}}
+                                <span class="badge red-text" style="margin-left: 5rem">No</span>
+                            {{/if}}
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Registration
+                            <span class="badge" style="margin-left: 2rem">{{createdAt}}</span>
+                        </div>
+                    </li>
+                    <li style="margin-top: 2rem;">
+                        <button class="btn waves-effect waves-light" type="submit" id="submit" disabled>Update
+                            <i class="material-icons right">update</i>
+                        </button>
+                        <a class="waves-effect red accent-1 btn modal-trigger" href="#modal1">Delete
+                            <i class="material-icons right">delete</i>
+                        </a>
+                    </li>
+                </ul>
+                <div class="input-field col s12" style="height: 1rem">
+                    <div id="error-message"></div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <h4>Delete user</h4>
+        <p>Are you sure you want to delete the user?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat">Disagree</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.collapsible');
+        M.Collapsible.init(elems);
+
+        var modal = document.querySelectorAll('.modal');
+        M.Modal.init(modal);
+    });
+
+    const form = document.getElementById('edit-form');
+    const submit = document.getElementById('submit');
+    const errMsg = document.getElementById('error-message');
+
+    const isValidName = (val) => /^[A-Za-zА-яа-яЁё]+$/.test(val) && val.trim().length >= 2;
+     const isValidDate = (val) => {
+        if (!val) return false;
+        const date = new Date(val);
+        const now = new Date();
+        return date.getFullYear() <= now.getFullYear() - 13 && date.getFullYear() >= now.getFullYear() - 100;
+    };
+
+    const validateForm = (eventForm) => {
+        const firstName = form.firstName.value;
+        const lastName = form.lastName.value;
+        const middleName = form.middleName.value;
+        const birthDate = form.birthDate.value;
+
+        let firstNameFlag = false;
+        let lastNameFlag = false;
+        let middleNameFlag = false;
+        let birthDateFlag = false;
+        let valid = true;
+        errMsg.innerHTML = '';
+
+        switch (eventForm) {
+            case "firstName":
+                firstNameFlag = true;
+                if (!isValidName(firstName)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Invalid last name (at least 2 characters)</span>`;
+                    form.firstName.classList.add('invalid');
+                    form.firstName.classList.remove('validate');
+                } else {
+                    form.firstName.classList.add('validate');
+                    form.firstName.classList.remove('invalid');
+                }
+                if (firstName.length === 0) {
+                    form.firstName.classList.add('validate');
+                    form.firstName.classList.remove('invalid');
+                    valid = true;
+                    errMsg.innerHTML = '';
+                    firstNameFlag = false;
+                }
+                break;
+            case "lastName":
+                lastNameFlag = true;
+                if (!isValidName(lastName)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Invalid name (at least 2 characters)</span>`;
+                    form.lastName.classList.add('invalid');
+                    form.lastName.classList.remove('validate');
+                } else {
+                    form.lastName.classList.add('validate');
+                    form.lastName.classList.remove('invalid');
+                }
+                if (lastName.length === 0) {
+                    form.lastName.classList.add('validate');
+                    form.lastName.classList.remove('invalid');
+                    valid = true;
+                    errMsg.innerHTML = '';
+                    lastNameFlag = false;
+                }
+                break;
+            case "middleName":
+                middleNameFlag = true;
+                if (!/^[A-Za-zА-яа-яЁё]+$/.test(middleName)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Incorrect characters in middlename</span>`;
+                    form.middleName.classList.add('invalid');
+                    form.middleName.classList.remove('validate');
+                } else {
+                    form.middleName.classList.add('validate');
+                    form.middleName.classList.remove('invalid');
+                }
+                if (middleName.length === 0) {
+                    form.middleName.classList.add('validate');
+                    form.middleName.classList.remove('invalid');
+                    valid = true;
+                    errMsg.innerHTML = '';
+                    middleNameFlag = false;
+                }
+                break;
+            case "birthDate":
+                birthDateFlag = true;
+                if (!isValidDate(birthDate)) {
+                    valid = false;
+                    errMsg.innerHTML = `<span class="message error-message">Invalid date of birth (less than 13 years)</span>`;
+                    form.birthDate.classList.add('invalid');
+                    form.birthDate.classList.remove('validate');
+                } else {
+                    form.birthDate.classList.add('validate');
+                    form.birthDate.classList.remove('invalid');
+                }
+                if (birthDate.length === 0) {
+                    form.birthDate.classList.add('validate');
+                    form.birthDate.classList.remove('invalid');
+                    valid = true;
+                    errMsg.innerHTML = '';
+                    birthDateFlag = false;
+                }
+                break;
+        }
+        if (!firstNameFlag && !lastNameFlag && !middleNameFlag && !birthDateFlag) {
+            valid = false;
+        }
+        submit.disabled = !valid;
+    };
+
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('change', (i) => validateForm(i.target.name));
+    });
+
+    form.addEventListener('submit', (e) => {
+        if (submit.disabled) e.preventDefault();
+    });
+</script>

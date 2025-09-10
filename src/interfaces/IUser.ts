@@ -30,4 +30,10 @@ export interface IUserUpdate {
     firstName?: string;
     middleName?: string;
     birthDate?: Date;
+    isActive?: boolean;
+}
+
+export interface IAuthUser {
+    id: string;
+    email: string;
 }

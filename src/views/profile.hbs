@@ -1,41 +1,58 @@
 <nav class="teal lighten-3 z-depth-5">
     <div class="nav-wrapper">
         <div class="brand-logo" style="margin-left: 3rem; cursor: pointer">Logo</div>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-
+        <ul id="nav" class="right">
             <li><a href="/profile/edit">Edit profile</a></li>
             <li><a href="/auth/logout">Logout</a></li>
         </ul>
     </div>
 </nav>
-<div class="container" style="margin-top: 6rem;">
+<div class="container" style="margin-top: 6rem; width: 40vw">
     <div class="grey lighten-3">
         <h4 class="center-align" style="padding: 0.5rem 0">User profile</h4>
-        <div class="card">
-            <div class="card-content">
-                <span class="card-title">{{firstName}} {{lastName}}</span>
-
-                {{#if middleName}}
-                    <p><strong>Отчество:</strong> {{middleName}}</p>
-                {{/if}}
-
-                <p><strong>Дата рождения:</strong> {{birthDate}}</p>
-                <p><strong>Email:</strong> {{email}}</p>
-
-                <p><strong>Роль:</strong>
-
-                </p>
-
-                <p><strong>Активен:</strong>
-                    {{#if isActive}}
-                        <span class="green-text">Да</span>
-                    {{else}}
-                        <span class="red-text">Нет</span>
-                    {{/if}}
-                </p>
-
-                <p><strong>Дата регистрации:</strong> {{createdAt}}</p>
-            </div>
+        <div class="card z-depth-0">
+            <ul class="collapsible">
+                    <li>
+                        <div class="collapsible-header">
+                            Full name
+                            <span class="badge">{{fullName}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Date of birth
+                            <span class="badge">{{birthDate}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Email
+                            <span class="badge">{{email}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Role
+                            <span class="badge">{{role}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Active
+                            {{#if isActive}}
+                                <span class="badge green-text">Yes</span>
+                            {{else}}
+                                <span class="badge red-text">No</span>
+                            {{/if}}
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Registration
+                            <span class="badge">{{createdAt}}</span>
+                        </div>
+                    </li>
+                </ul>
         </div>
     </div>
 </div>

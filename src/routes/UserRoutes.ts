@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/UserController.ts';
+import passport from "passport";
 
 const userRoutes = Router();
 
 userRoutes.get('/', UserController.getAllUsers);
 userRoutes.get('/:id', UserController.getUser);
 userRoutes.post('/', UserController.createUser);
-userRoutes.put('/:id', UserController.updateUser);
+userRoutes.post('/update', passport.authenticate('jwt', {session: false}), UserController.updateUser);
 userRoutes.delete('/:id', UserController.deleteUser);
 userRoutes.patch('/:id/activate', UserController.activateUser);
 userRoutes.patch('/:id/inactivate', UserController.inactivateUser);

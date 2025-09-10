@@ -1,5 +1,15 @@
 import { Request as Req, Response as Res } from 'express';
 import { UserService } from '../services/UserService.ts';
+import {IAuthUser, IUserUpdate} from "../interfaces/IUser.ts";
+
+function emptyFieldsObjectDelete(obj: any): any {
+    return Object.keys(obj).reduce((acc, key) => {
+        if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
+            acc[key] = obj[key];
+        }
+        return acc;
+    }, {} as any);
+}
 
 export class UserController {
     static async createUser(req: Req, res: Res) {
@@ -40,7 +50,9 @@ export class UserController {
 
     static async getAllUsers(req: Req, res: Res) {
         try {
-            const users = await UserService.getAllUsers();
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 10;
+            const users = await UserService.getAllUsers(page, limit);
             if (!users) {
                 return res.status(404).json({ error: 'Пользователи не найдены' });
             }
@@ -56,11 +68,13 @@ export class UserController {
 
     static async updateUser(req: Req, res: Res) {
         try {
-            const user = await UserService.updateUser(req.params.id, req.body);
+            const authUser = req.user as IAuthUser;
+            const newDataUser: IUserUpdate = emptyFieldsObjectDelete(req.body);
+            const user = await UserService.updateUser(authUser.id, newDataUser);
             if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
-            res.json(user);
+            res.redirect('/profile/edit');
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });

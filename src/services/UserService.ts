@@ -34,7 +34,7 @@ export class UserService {
     }
 
     static async updateUser(id: string, updateUserData: IUserUpdate) {
-        return await User.findByIdAndUpdate(id, updateUserData, {new: true, runValidators: true});
+        return await User.findByIdAndUpdate(id, updateUserData, {new: true, runValidators: false});
     }
 
     static async deleteUser(id: string) {

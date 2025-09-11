@@ -28,13 +28,15 @@
                             <td> {{fullName}}   </td>
                             <td> {{email}} </td>
                             <td> {{role}} </td>
-
-                            {{#if isActive}}
-                                <td>Active</td>
-                            {{else}}
-                                <td>No active</td>
-                            {{/if}}
-
+                                {{#if isActive}}
+                                    <td class="green-text text-lighten-2 center" id="{{id}}">
+                                        Active
+                                    </td>
+                                {{else}}
+                                    <td class="red-text text-lighten-2 center" id="{{id}}">
+                                        Inactive
+                                    </td>
+                                {{/if}}
                             <td><button data-target="modal1" class="btn modal-trigger right right-align modal-detal" data-id="{{id}}" id="{{id}}">Details</button></td>
                         </tr>
 
@@ -49,15 +51,6 @@
                 {{/if}}
             </tbody>
         </table>
-            <ul class="pagination">
-                <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                <li class="active"><a href="#!">1</a></li>
-                <li class="waves-effect"><a href="#!">2</a></li>
-                <li class="waves-effect"><a href="#!">3</a></li>
-                <li class="waves-effect"><a href="#!">4</a></li>
-                <li class="waves-effect"><a href="#!">5</a></li>
-                <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-            </ul>
         </div>
         <div class="col s3 right right-align">
             <div class="card z-depth-0">
@@ -144,7 +137,14 @@
             <li>
                 <div class="collapsible-header">
                     Active
-                    <span class="badge green-text" id="isActive"></span>
+                    <span class="badge green-text">
+                        <div class="switch">
+                            <label>
+                                <input type="checkbox" id="isActive">
+                                <span class="lever"></span>
+                            </label>
+                        </div>
+                    </span>
                 </div>
             </li>
             <li>
@@ -160,8 +160,6 @@
                 </div>
             </li>
         </ul>
-
-
     </div>
     <div class="modal-footer">
         <a href="#" class="modal-close waves-effect waves-red btn-flat">Close</a>
@@ -200,18 +198,30 @@ modals.forEach(modal => {
         updatedAt.innerText = user.updatedAt.toString();
         birthDate.innerText = user.birthDate.toString();
         createdAt.innerText = user.createdAt.toString();
-        if (user.isActive) {
-            isActive.innerText = 'Yes';
-            isActive.classList.remove('red-text');
-            isActive.classList.add('green-text');
-        } else {
-            isActive.innerText = 'No';
-            isActive.classList.remove('green-text');
-            isActive.classList.add('red-text');
+        isActive.checked = user.isActive;
 
-        }
+        isActive.addEventListener('click', async (active) => {
 
+            const user = await (await fetch(`/users/${e.target.dataset.id}/${active.target.checked ? 'activate' : 'inactivate' }`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })).json();
+            const status = document.getElementById(user.id);
+            if (user.isActive) {
+                status.innerText = 'Active';
+                status.classList.add('green-text');
+                status.classList.remove('red-text');
+            } else {
+                status.innerText = 'Inactive';
+                status.classList.add('red-text');
+                status.classList.remove('green-text');
+            }
+
+        }, { once: true })
     })
+
 })
 
 </script>

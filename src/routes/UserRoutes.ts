@@ -9,8 +9,8 @@ userRoutes.get('/:id', UserController.getUser);
 userRoutes.post('/', UserController.createUser);
 userRoutes.post('/update', passport.authenticate('jwt', {session: false}), UserController.updateUser);
 userRoutes.delete('/', passport.authenticate('jwt', {session: false}), UserController.deleteUser);
-userRoutes.patch('/:id/activate', UserController.activateUser);
-userRoutes.patch('/:id/inactivate', UserController.inactivateUser);
+userRoutes.get('/:id/activate', UserController.activateUser);
+userRoutes.get('/:id/inactivate', UserController.inactivateUser);
 
 userRoutes.get('/search/email/:email', UserController.findByEmail);
 userRoutes.get('/search/role/:role', UserController.findByRole);

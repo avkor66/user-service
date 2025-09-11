@@ -143,7 +143,11 @@ export class UserController {
             if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
-            res.json(user);
+            res.json({
+                id: user._id,
+                isActive: user.isActive,
+                email: user.email
+            });
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
@@ -159,7 +163,11 @@ export class UserController {
             if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
-            res.json(user);
+            res.json({
+                id: user._id,
+                isActive: user.isActive,
+                email: user.email
+            });
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });

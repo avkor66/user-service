@@ -10,6 +10,7 @@ import adminRoutes from './routes/AdminRoutes.ts';
 import authRoutes from './routes/AuthRoutes.ts';
 import profileRoutes from './routes/ProfileRoutes.ts';
 import passportConfig from './middleware/passport.ts';
+import { IsAdmin } from './middleware/isAdmin.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../.env') });
@@ -45,7 +46,7 @@ passportConfig(passport);
 app.get('/', (req, res) => res.redirect('/auth/signin'));
 app.use('/auth', authRoutes);
 app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
-app.use('/admin', passport.authenticate('jwt', {session: false}), adminRoutes);
+app.use('/admin', passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
 
 //TO DO exception
 

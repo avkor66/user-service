@@ -72,7 +72,7 @@ export class AuthController {
             }
             const token: String = jwt.sign({
                 email: user.email,
-                userId: user._id
+                userId: user._id,
             }, process.env.JWT_SECRET!, {expiresIn: 60 * 60 * 24});
 
             res.cookie("auth_token", token, {

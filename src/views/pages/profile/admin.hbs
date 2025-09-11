@@ -14,6 +14,7 @@
                 </thead>
                 <tbody>
                     {{#if users.length}}
+                        {{log "USERS DATA:" users}}
                         {{#each users}}
                             <tr>
                                 <td> {{fullName}}   </td>
@@ -174,7 +175,7 @@
         const isActive = document.getElementById('isActive');
 
         modal.addEventListener('click', async (e) => {
-            const user = await (await fetch(`/users/${e.target.dataset.id}`, {
+            const user = await (await fetch(`/admin/${e.target.dataset.id}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
             })).json();
@@ -188,7 +189,7 @@
             isActive.checked = user.isActive;
 
             isActive.addEventListener('click', async (active) => {
-                const user = await (await fetch(`/users/${e.target.dataset.id}/${active.target.checked ? 'activate' : 'inactivate' }`, {
+                const user = await (await fetch(`/admin/${e.target.dataset.id}/${active.target.checked ? 'activate' : 'inactivate' }`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 })).json();

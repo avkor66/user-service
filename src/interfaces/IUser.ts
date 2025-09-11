@@ -34,6 +34,33 @@ export interface IUserUpdate {
 }
 
 export interface IAuthUser {
+    password: string;
+    email: string;
+}
+
+export interface IAuthUserJWT {
     id: string;
     email: string;
+}
+
+export interface IUserProfile {
+    fullName: string;
+    firstName: string;
+    lastName: string;
+    middleName?: string;
+    birthDate: string;
+    email: string;
+    role: 'admin' | 'user';
+    isAdmin: boolean;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IUsersAdmin {
+    fullName: string;
+    email: string;
+    role: 'admin' | 'user';
+    isActive: boolean;
+    id: string;
 }

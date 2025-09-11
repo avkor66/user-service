@@ -3,21 +3,10 @@ import { AuthController } from '../controllers/AuthController.ts';
 
 const authRoutes = Router();
 
+authRoutes.get('/signin', AuthController.authRenderSignin);
+authRoutes.get('/signup', AuthController.authRenderSignup);
 authRoutes.post('/signin', AuthController.authSignin);
 authRoutes.post('/signup', AuthController.authSignup);
-authRoutes.get('/logout', (req, res) => {
-    res.clearCookie("auth_token", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "strict"
-    });
-    res.render('pages/success', {
-        title: 'Logout!',
-        heading: 'Logout user.',
-        message: 'You have logged out of your profile.',
-        path: '/',
-        time: 1
-    })
-});
+authRoutes.get('/logout', AuthController.logout);
 
 export default authRoutes;

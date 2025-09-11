@@ -1,19 +1,17 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { config } from 'dotenv';
 import path from 'path';
+import passport from 'passport'
+import cookieParser from 'cookie-parser';
+import { config } from 'dotenv';
 import { fileURLToPath } from 'url';
-import userRoutes from './routes/UserRoutes.ts';
 import { engine } from 'express-handlebars';
-import authRoutes from "./routes/AuthRoutes.ts";
-import profileRoutes from "./routes/ProfileRoutes.ts";
-import passport from "passport"
+import adminRoutes from './routes/AdminRoutes.ts';
+import authRoutes from './routes/AuthRoutes.ts';
+import profileRoutes from './routes/ProfileRoutes.ts';
 import passportConfig from './middleware/passport.ts';
-import cookieParser from "cookie-parser";
-import configurePassport from "./middleware/passport.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
@@ -21,11 +19,11 @@ const port = process.env.PORT || 3000;
 
 app.engine('.hbs', engine({extname: '.hbs'}));
 app.set('view engine', '.hbs');
-app.set('views', path.resolve(__dirname, "./views"));
+app.set('views', path.join(__dirname, '/views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static('public'));
 app.use(cookieParser());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ri8xy.mongodb.net/${process.env.DB_COLLECTION}?retryWrites=true&w=majority&appName=Cluster0`;
@@ -33,9 +31,9 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 async function run() {
     try {
         await mongoose.connect(uri);
-        console.log("Успешное подключение к MongoDB!");
+        console.log('Успешное подключение к MongoDB!');
     } catch (error) {
-        console.error("Ошибка подключения:", error);
+        console.error('Ошибка подключения:', error);
         process.exit(1);
     }
 }
@@ -44,19 +42,10 @@ run();
 app.use(passport.initialize());
 passportConfig(passport);
 
-app.get('/', (req, res) => {
-    res.redirect('/signin');
-})
-app.get('/signin', (req, res) => {
-    res.render('pages/auth/signin', { title: 'Signin' });
-})
-app.get('/signup', (req, res) => {
-    res.render('pages/auth/signup', { title: 'Signup' });
-})
-app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
+app.get('/', (req, res) => res.redirect('/auth/signin'));
 app.use('/auth', authRoutes);
-app.use('/users', userRoutes);
-
+app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
+app.use('/admin', passport.authenticate('jwt', {session: false}), adminRoutes);
 
 //TO DO exception
 

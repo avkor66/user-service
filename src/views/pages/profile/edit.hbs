@@ -4,11 +4,11 @@
     <div class="grey lighten-3">
         <h4 class="center-align" style="padding: 0.5rem 0">Edit user profile</h4>
         <div class="card z-depth-0">
-            <form action="/users/update" method="POST" id="edit-form">
+            <form action="/profile/update" method="POST" id="edit-form">
                 <ul class="collapsible">
                     <li>
                         <div class="collapsible-header">FirstName
-                            <span class="badge">{{firstName}}</span>
+                            <span class="badge">{{user.firstName}}</span>
                         </div>
                         <div class="collapsible-body">
                             <input id="first_name" type="text" name="firstName" class="validate">
@@ -17,7 +17,7 @@
                     </li>
                     <li>
                         <div class="collapsible-header">LastName
-                            <span class="badge">{{lastName}}</span>
+                            <span class="badge">{{user.lastName}}</span>
                         </div>
                         <div class="collapsible-body">
                             <input id="last_name" type="text" name="lastName" class="validate">
@@ -26,7 +26,7 @@
                     </li>
                     <li>
                         <div class="collapsible-header">MiddleName
-                            <span class="badge">{{middleName}}</span>
+                            <span class="badge">{{user.middleName}}</span>
                         </div>
                         <div class="collapsible-body">
                             <input id="middle_name" type="text" name="middleName" class="validate">
@@ -35,7 +35,7 @@
                     </li>
                     <li>
                         <div class="collapsible-header">Date of birth
-                            <span class="badge">{{birthDate}}</span>
+                            <span class="badge">{{user.birthDate}}</span>
                         </div>
                         <div class="collapsible-body">
                             <input id="birthday" type="date" name="birthDate" class="validate">
@@ -46,18 +46,18 @@
                 <ul class="card z-depth-0">
                     <li>
                         <div class="collapsible-header">Email
-                            <span class="badge" style="margin-left: 5rem">{{email}}</span>
+                            <span class="badge" style="margin-left: 5rem">{{user.email}}</span>
                         </div>
 
                     </li>
                     <li>
                         <div class="collapsible-header">Role
-                            <span class="badge" style="margin-left: 6rem">{{role}}</span>
+                            <span class="badge" style="margin-left: 6rem">{{user.role}}</span>
                         </div>
                     </li>
                     <li>
                         <div class="collapsible-header">Active
-                            {{#if isActive}}
+                            {{#if user.isActive}}
                                 <span class="badge green-text" style="margin-left: 5rem">Yes</span>
                             {{else}}
                                 <span class="badge red-text" style="margin-left: 5rem">No</span>
@@ -67,7 +67,7 @@
                     <li>
                         <div class="collapsible-header">
                             Registration
-                            <span class="badge" style="margin-left: 2rem">{{createdAt}}</span>
+                            <span class="badge" style="margin-left: 2rem">{{user.createdAt}}</span>
                         </div>
                     </li>
                     <li style="margin-top: 2rem;">
@@ -226,7 +226,7 @@
     const agree = document.getElementById('agree');
     agree.addEventListener('click', async (e) => {
         try {
-            const response = await fetch('/users', {
+            const response = await fetch('/profile', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
             });

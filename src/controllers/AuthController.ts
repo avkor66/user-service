@@ -1,25 +1,56 @@
-import { Request as Req, Response as Res } from "express";
+import { Request, Response } from "express";
 import { User } from '../models/User.ts';
 import { UserService } from "../services/UserService.ts";
-import { IUserCreate } from "../interfaces/IUser.ts";
+import {IAuthUser, IUser, IUserCreate} from "../interfaces/IUser.ts";
 import jwt from  "jsonwebtoken";
-
-function emptyFieldsObjectDelete(obj: any): any {
-    return Object.keys(obj).reduce((acc, key) => {
-        if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
-            acc[key] = obj[key];
-        }
-        return acc;
-    }, {} as any);
-}
 
 export class AuthController {
 
-    static async authSignin(req: Req, res: Res) {
+    static async authRenderSignup(req: Request, res: Response) {
 
         try {
-            const authData = req.body;
-            const user = await User.findOne({ email: authData.email });
+            res.render('pages/auth/signup', { title: 'Signup' });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({
+                    success: false,
+                    message: error.message
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown error'
+                });
+            }
+        }
+
+    }
+
+    static async authRenderSignin(req: Request, res: Response) {
+
+        try {
+            res.render('pages/auth/signin', { title: 'Signin' });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({
+                    success: false,
+                    message: error.message
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown error'
+                });
+            }
+        }
+
+    }
+
+    static async authSignin(req: Request, res: Response) {
+
+        try {
+            const authData: IAuthUser = req.body;
+            const user: IUser | null = await User.findOne({ email: authData.email.toLowerCase() });
             if (!user) {
                 return res.status(400).json({
                     success: false,
@@ -32,26 +63,25 @@ export class AuthController {
                     message: 'The user is inactive',
                 });
             }
-
-            const isPasswordValid = await user.comparePassword(authData.password);
+            const isPasswordValid: Boolean = await user.comparePassword(authData.password);
             if (!isPasswordValid) {
                 res.status(400).json({
                     success: false,
                     message: 'Password incorrect',
                 });
             }
-
-            const token = jwt.sign({
+            const token: String = jwt.sign({
                 email: user.email,
                 userId: user._id
             }, process.env.JWT_SECRET!, {expiresIn: 60 * 60 * 24});
 
             res.cookie("auth_token", token, {
                 httpOnly: true,
-                secure: false, // true для HTTPS
+                secure: false,
                 sameSite: "strict",
                 maxAge: 24 * 60 * 60 * 1000
             });
+
             res.status(200).json({
                 success: true,
                 message: 'Login successful',
@@ -64,12 +94,13 @@ export class AuthController {
                 res.status(400).json({ error: 'Unknown error' });
             }
         }
+
     }
 
-    static async authSignup(req: Req, res: Res) {
+    static async authSignup(req: Request, res: Response) {
 
         try {
-            const userData: IUserCreate = emptyFieldsObjectDelete(req.body);
+            const userData: IUserCreate = req.body;
             const emailExists = await UserService.isEmailExists(userData.email);
             if (emailExists) {
                 res.status(400).json({
@@ -77,7 +108,7 @@ export class AuthController {
                     message: 'Email already exists'
                 });
             }
-            const user = await UserService.createUser(userData);
+            const user: IUser = await UserService.createUser(userData);
             res.status(201).json({
                 success: true,
                 message: 'User created'
@@ -95,6 +126,38 @@ export class AuthController {
                 });
             }
         }
+
+    }
+
+    static async logout(req: Request, res: Response) {
+
+        try {
+            res.clearCookie("auth_token", {
+                httpOnly: true,
+                secure: false,
+                sameSite: "strict"
+            });
+            res.render('pages/success', {
+                title: 'Logout!',
+                heading: 'Logout user.',
+                message: 'You have logged out of your profile.',
+                path: '/',
+                time: 1
+            })
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({
+                    success: false,
+                    message: error.message
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown error'
+                });
+            }
+        }
+
     }
 
 }

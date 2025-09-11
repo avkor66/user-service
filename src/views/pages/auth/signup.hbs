@@ -6,7 +6,7 @@
             </div>
             <div class="col s6 right-align">
                 <button class="btn waves-effect waves-light" type="submit" name="action">
-                    <a href="/signin" style="text-decoration: none; color: white">Signin</a>
+                    <a href="/auth/signin" style="text-decoration: none; color: white">Signin</a>
                 </button>
             </div>
         </div>
@@ -221,7 +221,7 @@
 
                 showMessage('success', result.message, result.error);
                 setTimeout(() => {
-                    window.location.href = '/signin';
+                    window.location.href = '/auth/signin';
                 }, 2000);
 
             } else showMessage('error', result.message, result.error);

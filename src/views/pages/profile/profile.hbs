@@ -7,28 +7,28 @@
             <ul class="collapsible">
                 <li>
                     <div class="collapsible-header">
-                        Full name<span class="badge">{{fullName}}</span>
+                        Full name<span class="badge">{{user.fullName}}</span>
                     </div>
                 </li>
                 <li>
                     <div class="collapsible-header">
-                        Date of birth<span class="badge">{{birthDate}}</span>
+                        Date of birth<span class="badge">{{user.birthDate}}</span>
                     </div>
                 </li>
                 <li>
                     <div class="collapsible-header">
-                        Email<span class="badge">{{email}}</span>
+                        Email<span class="badge">{{user.email}}</span>
                     </div>
                 </li>
                 <li>
                     <div class="collapsible-header">
-                        Role<span class="badge">{{role}}</span>
+                        Role<span class="badge">{{user.role}}</span>
                     </div>
                 </li>
                 <li>
                     <div class="collapsible-header">
                         Active
-                        {{#if isActive}}
+                        {{#if user.isActive}}
                             <span class="badge green-text">Yes</span>
                         {{else}}
                             <span class="badge red-text">No</span>
@@ -37,7 +37,7 @@
                 </li>
                 <li>
                     <div class="collapsible-header">
-                        Registration<span class="badge">{{createdAt}}</span>
+                        Registration<span class="badge">{{user.createdAt}}</span>
                     </div>
                 </li>
             </ul>

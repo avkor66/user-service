@@ -1,45 +1,50 @@
-import { Request as Req, Response as Res } from 'express';
+import {Request, Response} from 'express';
 import { UserService } from '../services/UserService.ts';
-import {IAuthUser, IUserCreate, IUserUpdate} from "../interfaces/IUser.ts";
-
-const timeCorrect = (time: number): string => {
-    return time < 10 ? '0' + time.toString() : time.toString();
-};
-const dateEditor = (date: Date, flag: boolean): string => {
-    const newDate = `${timeCorrect(date.getDate())}.${timeCorrect(date.getMonth() + 1)}.${date.getFullYear()}`
-    if (flag) {
-        const newTime = `${timeCorrect(date.getHours())}:${timeCorrect(date.getMinutes() + 1)}:${timeCorrect(date.getSeconds())}`
-        return newDate + ' ' + newTime;
-    } else {
-        return newDate;
-    }
-}
-
-function emptyFieldsObjectDelete(obj: any): any {
-    return Object.keys(obj).reduce((acc, key) => {
-        if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
-            acc[key] = obj[key];
-        }
-        return acc;
-    }, {} as any);
-}
+import {IAuthUserJWT, IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser.ts";
+import {User} from "../models/User.ts";
+import {ProfileService} from "../services/ProfileService.ts";
 
 export class UserController {
-    static async createUser(req: Req, res: Res) {
+
+    static async getProfileAdmin(req: Request, res: Response) {
+        try {
+            const authUser = req.user as IAuthUserJWT;
+            const userDB: IUser | null = await User.findById(authUser.id);
+            if (userDB === null) {
+                res.render('pages/auth/signin', {title: 'Signin'});
+            }
+            const users: IUser[] = await UserService.getAllUsers()
+            if (userDB === null) {
+                res.render('pages/auth/signin', {title: 'Signin'});
+            } else {
+                res.render('pages/profile/admin', {
+                    title: 'Admin',
+                    admin: ProfileService.userEditorForProfile(userDB),
+                    users: users.map((value: IUser) => UserService.usersEditorForAdmin(value)),
+                })
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({ error: error.message });
+            } else {
+                res.status(400).json({ error: 'Неизвестная ошибка' });
+            }
+        }
+    }
+
+    static async createUser(req: Request, res: Response) {
         try {
             const userData: IUserCreate = emptyFieldsObjectDelete(req.body);
             const emailExists = await UserService.isEmailExists(userData.email);
             if (emailExists) {
-                res.json({
-                    success: false,
-                    message: 'Email already exists'
-                });
+                res.json({ success: false, message: 'Email already exists' });
             }
-            const user = await UserService.createUser(userData);
-            res.json({
-                success: true,
-                message: 'User created'
-            });
+            const newUser = await UserService.createUser(userData);
+            if (newUser) {
+                res.json({ success: true, message: 'User created' });
+            } else {
+                res.json({ success: false, message: 'Unknown error' });
+            }
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({
@@ -55,38 +60,27 @@ export class UserController {
         }
     }
 
-    static async getUser(req: Req, res: Res) {
+    static async getUser(req: Request, res: Response) {
         try {
-            const user = await UserService.findById(req.params.id);
+            const user: IUser | null = await UserService.findById(req.params.id);
             if (!user) {
-                return res.status(404).json({ error: 'Пользователь не найден' });
+                return res.status(404).json({ error: 'User not found' });
             }
-            const newUser = {
-                fullName: `${user.firstName} ${user.lastName} ${user.middleName}`,
-                birthDate: dateEditor(user.birthDate, false),
-                email: user.email,
-                role: user.role,
-                isActive: user.isActive,
-                createdAt: dateEditor(user.createdAt, true),
-                updatedAt: dateEditor(user.updatedAt, true)
-            }
-            res.json(newUser);
+            res.json(ProfileService.userEditorForProfile(user));
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
             } else {
-                res.status(400).json({ error: 'Неизвестная ошибка' });
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
     }
 
-    static async getAllUsers(req: Req, res: Res) {
+    static async getAllUsers(req: Request, res: Response) {
         try {
-            const page = Number(req.query.page) || 1;
-            const limit = Number(req.query.limit) || 10;
-            const users = await UserService.getAllUsers(page, limit);
+            const users: IUser[] = await UserService.getAllUsers();
             if (!users) {
-                return res.status(404).json({ error: 'Пользователи не найдены' });
+                return res.status(404).json({ error: 'Users not found' });
             }
             res.json(users);
         } catch (error) {
@@ -98,13 +92,13 @@ export class UserController {
         }
     }
 
-    static async updateUser(req: Req, res: Res) {
+    static async updateUser(req: Request, res: Response) {
         try {
-            const authUser = req.user as IAuthUser;
+            const authUser = req.user as IAuthUserJWT;
             const newDataUser: IUserUpdate = emptyFieldsObjectDelete(req.body);
-            const user = await UserService.updateUser(authUser.id, newDataUser);
+            const user: IUser | null = await UserService.updateUser(authUser.id, newDataUser);
             if (!user) {
-                return res.status(404).json({ error: 'Пользователь не найден' });
+                return res.status(404).json({ error: 'User not found' });
             }
             res.redirect('/profile/edit');
         } catch (error) {
@@ -116,18 +110,17 @@ export class UserController {
         }
     }
 
-    static async deleteUser(req: Req, res: Res) {
+    static async deleteUser(req: Request, res: Response) {
         try {
-            const removeUser = req.user as IAuthUser;
-            const user = await UserService.deleteUser(removeUser.id);
+            const removeUser = req.user as IAuthUserJWT;
+            const user: IUser | null = await UserService.deleteUser(removeUser.id);
             if (!user) {
-                return res.status(404).json({ error: 'Пользователь не найден' });
+                return res.status(404).json({ error: 'User not found' });
             }
             res.status(200).json({
                 status: 'success',
                 message: 'User deleted'
             });
-
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
@@ -137,17 +130,13 @@ export class UserController {
         }
     }
 
-    static async activateUser(req: Req, res: Res) {
+    static async activateUser(req: Request, res: Response) {
         try {
-            const user = await UserService.activateUser(req.params.id);
+            const user: IUser | null = await UserService.activateUser(req.params.id);
             if (!user) {
-                return res.status(404).json({ error: 'Пользователь не найден' });
+                return res.status(404).json({ error: 'User not found' });
             }
-            res.json({
-                id: user._id,
-                isActive: user.isActive,
-                email: user.email
-            });
+            res.json({ id: user._id, isActive: user.isActive, email: user.email });
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
@@ -157,17 +146,13 @@ export class UserController {
         }
     }
 
-    static async inactivateUser(req: Req, res: Res) {
+    static async inactivateUser(req: Request, res: Response) {
         try {
-            const user = await UserService.inactivateUser(req.params.id);
+            const user: IUser | null = await UserService.inactivateUser(req.params.id);
             if (!user) {
-                return res.status(404).json({ error: 'Пользователь не найден' });
+                return res.status(404).json({ error: 'User not found' });
             }
-            res.json({
-                id: user._id,
-                isActive: user.isActive,
-                email: user.email
-            });
+            res.json({ id: user._id, isActive: user.isActive, email: user.email });
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({ error: error.message });
@@ -177,67 +162,13 @@ export class UserController {
         }
     }
 
-    static async findByEmail(req: Req, res: Res) {
-        try {
-            const user = await UserService.findByEmail(req.params.email);
-            if (!user) {
-                return res.status(404).json({ error: 'Пользователь не найден' });
-            }
-            res.json(user);
-        } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ error: error.message });
-            } else {
-                res.status(400).json({ error: 'Unknown error' });
-            }
-        }
-    }
+}
 
-    static async findByRole(req: Req, res: Res) {
-        try {
-            const users = await UserService.findByRole(req.params.role as 'admin' | 'user');
-            if (!users) {
-                return res.status(404).json({ error: 'Пользователь не найден' });
-            }
-            res.json(users);
-        } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ error: error.message });
-            } else {
-                res.status(400).json({ error: 'Unknown error' });
-            }
+function emptyFieldsObjectDelete(obj: any): any {
+    return Object.keys(obj).reduce((acc, key) => {
+        if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
+            acc[key] = obj[key];
         }
-    }
-
-    static async getActiveUsers(req: Req, res: Res) {
-        try {
-            const users = await UserService.findActiveUsers();
-            if (!users) {
-                return res.status(404).json({ error: 'Активные пользователи не найдены' });
-            }
-            res.json(users);
-        } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ error: error.message });
-            } else {
-                res.status(400).json({ error: 'Unknown error' });
-            }
-        }
-    }
-
-    static async getInactiveUsers(req: Req, res: Res) {
-        try {
-            const users = await UserService.findInactiveUsers();
-            if (!users) {
-                return res.status(404).json({ error: 'Неактивные пользователи не найдены' });
-            }
-            res.json(users);
-        } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ error: error.message });
-            } else {
-                res.status(400).json({ error: 'Unknown error' });
-            }
-        }
-    }
+        return acc;
+    }, {} as any);
 }

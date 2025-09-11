@@ -1,9 +1,9 @@
 <nav class="teal lighten-3 z-depth-5">
     <div class="nav-wrapper">
-        <div class="brand-logo" style="margin-left: 3rem; cursor: pointer">Logo</div>
+        <div class="brand-logo" style="margin-left: 3rem; cursor: pointer">User service</div>
         <ul id="nav" class="right">
-            {{#if isAdmin}}
-                <li><a href="/profile/admin">Admin panel</a></li>
+            {{#if user.isAdmin}}
+                <li><a href="/admin">Admin panel</a></li>
             {{/if}}
             <li><a href="/profile">Profile</a></li>
             <li><a href="/profile/edit">Edit profile</a></li>

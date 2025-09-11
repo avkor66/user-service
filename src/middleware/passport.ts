@@ -1,7 +1,7 @@
 import { PassportStatic } from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { User } from '../models/User.ts';
-import {IAuthUser} from "../interfaces/IUser.ts";
+import {IAuthUser, IAuthUserJWT} from "../interfaces/IUser.ts";
 
 const configurePassport = (passport: PassportStatic) => {
     const options = {
@@ -16,7 +16,7 @@ const configurePassport = (passport: PassportStatic) => {
             try {
                 const user = await User.findById(payload.userId).select('email id');
                 if (user) {
-                    const authUser: IAuthUser = { id: user.id, email: user.email };
+                    const authUser: IAuthUserJWT = { id: user.id, email: user.email };
                     return done(null, authUser);
                 } else {
                     return done(null, false);

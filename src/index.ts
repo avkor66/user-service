@@ -1,4 +1,5 @@
 import express from 'express';
+import {NextFunction, Request, Response} from "express";
 import mongoose from 'mongoose';
 import path from 'path';
 import passport from 'passport'
@@ -48,8 +49,18 @@ app.use('/auth', authRoutes);
 app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
 app.use('/admin', passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
 
-//TO DO exception
+app.use((req, res, next) => {
+    res.status(404);
+    res.render('pages/errors/404', { title: 'Страница не найдена' });
+});
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack);
+    res.status(500);
+    res.render('pages/errors/500', { title: 'Ошибка сервера', error: err });
+});
 
 app.listen(port, () => {
     console.info(`Listening at http://localhost:${port}`)
 });
+

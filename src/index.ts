@@ -48,10 +48,10 @@ app.get('/', (req, res) => {
     res.redirect('/signin');
 })
 app.get('/signin', (req, res) => {
-    res.render('signin', { title: 'Signin' });
+    res.render('pages/auth/signin', { title: 'Signin' });
 })
 app.get('/signup', (req, res) => {
-    res.render('signup', { title: 'Signup' });
+    res.render('pages/auth/signup', { title: 'Signup' });
 })
 app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
 app.use('/auth', authRoutes);

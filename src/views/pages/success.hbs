@@ -8,10 +8,10 @@
 
     <script>
         let count = {{ time }};
-        const counterEl = document.getElementById('counter');
+        const counter = document.getElementById('counter');
         const interval = setInterval(() => {
             count--;
-            counterEl.textContent = count;
+            counter.textContent = count;
             if (count === 0) {
                 clearInterval(interval);
                 window.location.href = '{{ path }}';

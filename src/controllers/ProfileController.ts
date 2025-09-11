@@ -22,7 +22,7 @@ export class ProfileController {
             const authUser = req.user as IAuthUser;
             const userDB = await User.findById(authUser.id)
             if (userDB === null) {
-                res.render('/login');
+                res.render('pages/auth/signin');
             } else {
                 const user = {
                     lastName: userDB.lastName,
@@ -35,7 +35,7 @@ export class ProfileController {
                     createdAt: userDB.createdAt,
                     updatedAt: userDB.updatedAt
                 } as IUser;
-                res.render('profile', {
+                res.render('pages/profile/profile', {
                     fullName: `${user.lastName} ${user.firstName} ${user.middleName}`,
                     birthDate: dateEditor(user.birthDate, false),
                     email: user.email,
@@ -58,7 +58,7 @@ export class ProfileController {
             const authUser = req.user as IAuthUser;
             const userDB = await User.findById(authUser.id)
             if (userDB === null) {
-                res.render('/login');
+                res.render('pages/auth/signin');
             } else {
                 const user = {
                     lastName: userDB.lastName,
@@ -71,7 +71,7 @@ export class ProfileController {
                     createdAt: userDB.createdAt,
                     updatedAt: userDB.updatedAt
                 } as IUser;
-                res.render('edit', {
+                res.render('pages/profile/edit', {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     middleName: user.middleName || '',
@@ -106,7 +106,7 @@ export class ProfileController {
                 }
             });
             if (userDB === null) {
-                res.render('/login');
+                res.render('pages/auth/signin');
             } else {
                 const user = {
                     lastName: userDB.lastName,
@@ -119,7 +119,7 @@ export class ProfileController {
                     createdAt: userDB.createdAt,
                     updatedAt: userDB.updatedAt
                 };
-                res.render('admin', {
+                res.render('pages/profile/admin', {
                     admin: {
                         fullName: `${user.firstName} ${user.lastName} ${user.middleName}`,
                         firstName: user.firstName,

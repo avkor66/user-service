@@ -11,7 +11,7 @@ authRoutes.get('/logout', (req, res) => {
         secure: false,
         sameSite: "strict"
     });
-    res.render('success', {
+    res.render('pages/success', {
         title: 'Logout!',
         heading: 'Logout user.',
         message: 'You have logged out of your profile.',

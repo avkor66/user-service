@@ -1,5 +1,5 @@
 <div class="row" style="margin-top: 10rem">
-    <form class="col s6 offset-s3" action="/auth/signin" method="post" id="signin-form">
+    <form class="col s12 m6 offset-m4" action="/auth/signin" method="post" id="signin-form" style="max-width: 35rem">
         <div class="row" style="margin-bottom: 1rem;">
             <div class="col s6 valign-wrapper">
                 <h4 class="valign-wrapper" style="margin: 0;">Sign In</h4>
@@ -30,12 +30,28 @@
 </div>
 
 <script>
+
     const form = document.getElementById('signin-form');
     const submit = document.getElementById('submit');
     const errMsg = document.getElementById('error-message');
 
     const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
     const isValidPassword = (val) => val && val.length >= 6;
+
+    const classListCorrect = (form, isValid) => {
+        if (isValid) {
+            form.classList.add('validate');
+            form.classList.remove('invalid');
+        } else {
+            form.classList.add('invalid');
+            form.classList.remove('validate');
+        }
+    }
+
+    const errorMessagesTemplate = {
+        email: '<span class="message error-message">Invalid Email</span>',
+        password: '<span class="message error-message">Password is too short (minimum 6)</span>'
+    }
 
     const validateForm = (eventForm) => {
         const email = form.email.value;
@@ -48,29 +64,28 @@
             case "email":
                 if (!isValidEmail(email)) {
                     valid = false;
-                    errMsg.innerHTML = `<span class="message error-message">Invalid Email</span>`;
+                    errMsg.innerHTML = errorMessagesTemplate.email;
+                    classListCorrect(form.email, false);
                     form.email.classList.add('invalid');
                     form.email.classList.remove('validate');
                 } else {
+                    classListCorrect(form.email, true);
                     form.email.classList.add('validate');
                     form.email.classList.remove('invalid');
                 }
                 break;
+
             case "password":
-                form.password.classList.add('validate');
-                form.password.classList.remove('invalid');
+                classListCorrect(form.password, true);
                 if (!isValidPassword(password)) {
-                    errMsg.innerHTML = `<span class="message error-message">Password is too short (minimum 6)</span>`;
+                    errMsg.innerHTML = errorMessagesTemplate.password;
                     valid = false;
-                    form.password.classList.add('invalid');
-                    form.password.classList.remove('validate');
+                    classListCorrect(form.password, false);
                 }
                 break;
         }
 
-        if (!isValidPassword(password) || !isValidEmail(email)) {
-            valid = false;
-        }
+        if (!isValidPassword(password) || !isValidEmail(email)) valid = false;
 
         submit.disabled = !valid;
     };
@@ -88,9 +103,7 @@
         try {
             const response = await fetch('/auth/signin', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(loginData)
             });
 
@@ -100,9 +113,7 @@
                 showMessage('success', result.message);
                 window.location.href = '/profile';
 
-            } else {
-                showMessage('error', result.message);
-            }
+            } else showMessage('error', result.message);
 
         } catch (error) {
             showMessage('error', 'Network error');
@@ -113,4 +124,5 @@
         errMsg.textContent = text;
         errMsg.className = type;
     }
+
 </script>

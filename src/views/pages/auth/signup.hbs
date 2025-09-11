@@ -1,5 +1,5 @@
 <div class="row"  style="margin-top: 10rem">
-    <form class="col s6 offset-s3" action="/auth/signup" method="post" id="signup-form">
+    <form class="col s12 m6 offset-m4" action="/auth/signup" method="post" id="signup-form" style="max-width: 35rem">
         <div class="row" style="margin-bottom: 1rem;">
             <div class="col s6 valign-wrapper">
                 <h4 class="valign-wrapper" style="margin: 0;">Sign Up</h4>
@@ -48,7 +48,9 @@
                 <label for="passwordRetry">Retry Password</label>
             </div>
             <div class="input-field col s12" style="height: 1rem">
-                <div id="error-message"></div>
+                <div id="error-message">
+                    <span class="message error-message"></span>
+                </div>
             </div>
         </div>
 
@@ -61,7 +63,7 @@
 <script>
     const form = document.getElementById('signup-form');
     const submit = document.getElementById('submit');
-    const errMsg = document.getElementById('error-message');
+    const errMsg = document.getElementById('error-message').firstElementChild;
 
     const isValidName = (val) => /^[A-Za-zА-яа-яЁё]+$/.test(val) && val.trim().length >= 2;
     const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
@@ -69,10 +71,30 @@
         if (!val) return false;
         const date = new Date(val);
         const now = new Date();
-        return date.getFullYear() <= now.getFullYear() - 13 && date.getFullYear() >= now.getFullYear() - 100;
+        return date.getFullYear() <= now.getFullYear() - 13
+                && date.getFullYear() >= now.getFullYear() - 100;
     };
     const isValidPassword = (val) => val && val.length >= 6;
     const isPasswordsMatch = (pwd, retry) => pwd === retry;
+
+    const classListCorrect = (form, isValid) => {
+        if (isValid) {
+            form.classList.add('validate');
+            form.classList.remove('invalid');
+        } else {
+            form.classList.add('invalid');
+            form.classList.remove('validate');
+        }
+    };
+
+    const errorMessagesTemplate = {
+        name: 'Invalid name (at least 2 characters)',
+        middle: 'Incorrect characters in middlename',
+        email: 'Invalid Email',
+        birth: 'Invalid date of birth (less than 13 years)',
+        password: 'Password is too short (minimum 6)',
+        passwordMatch: 'Passwords do not match'
+    };
 
     const validateForm = (eventForm) => {
         const firstName = form.firstName.value;
@@ -84,122 +106,90 @@
         const retry = form.passwordRetry.value;
 
         let valid = true;
-        errMsg.innerHTML = '';
+        errMsg.innerText = '';
 
         switch (eventForm) {
             case "firstName":
                 if (!isValidName(firstName)) {
                     valid = false;
-                    errMsg.innerHTML = `<span class="message error-message">Invalid last name (at least 2 characters)</span>`;
-                    form.firstName.classList.add('invalid');
-                    form.firstName.classList.remove('validate');
-                } else {
-                    form.firstName.classList.add('validate');
-                    form.firstName.classList.remove('invalid');
-                }
+                    errMsg.innerText = errorMessagesTemplate.name;
+                    classListCorrect(form.firstName, false);
+                } else classListCorrect(form.firstName, true);
                 break;
+
             case "lastName":
                 if (!isValidName(lastName)) {
                     valid = false;
-                    errMsg.innerHTML = `<span class="message error-message">Invalid name (at least 2 characters)</span>`;
-                    form.lastName.classList.add('invalid');
-                    form.lastName.classList.remove('validate');
-                } else {
-                    form.lastName.classList.add('validate');
-                    form.lastName.classList.remove('invalid');
-                }
+                    errMsg.innerText = errorMessagesTemplate.name;
+                    classListCorrect(form.lastName, false);
+                } else classListCorrect(form.lastName, true);
                 break;
+
             case "middleName":
                 if (!/^[A-Za-zА-яа-яЁё]+$/.test(middleName)) {
                     valid = false;
-                    errMsg.innerHTML = `<span class="message error-message">Incorrect characters in middlename</span>`;
-                    form.middleName.classList.add('invalid');
-                    form.middleName.classList.remove('validate');
-                } else {
-                    form.middleName.classList.add('validate');
-                    form.middleName.classList.remove('invalid');
-                }
+                    errMsg.innerText = errorMessagesTemplate.middle;
+                    classListCorrect(form.middleName, false);
+                } else classListCorrect(form.middleName, true);
                 break;
+
             case "email":
                 if (!isValidEmail(email)) {
                     valid = false;
-                    errMsg.innerHTML = `<span class="message error-message">Invalid Email</span>`;
-                    form.email.classList.add('invalid');
-                    form.email.classList.remove('validate');
-                } else {
-                    form.email.classList.add('validate');
-                    form.email.classList.remove('invalid');
-                }
+                    errMsg.innerText = errorMessagesTemplate.email;
+                    classListCorrect(form.email, false);
+                } else classListCorrect(form.email, true);
                 break;
+
             case "birthDate":
                 if (!isValidDate(birthDate)) {
                     valid = false;
-                    errMsg.innerHTML = `<span class="message error-message">Invalid date of birth (less than 13 years)</span>`;
-                    form.birthDate.classList.add('invalid');
-                    form.birthDate.classList.remove('validate');
-                } else {
-                    form.birthDate.classList.add('validate');
-                    form.birthDate.classList.remove('invalid');
-                }
+                    errMsg.innerText = errorMessagesTemplate.birth;
+                    classListCorrect(form.birthDate, false);
+                } else classListCorrect(form.birthDate, true);
                 break;
+
             case "password":
-                form.password.classList.add('validate');
-                form.password.classList.remove('invalid');
+                classListCorrect(form.password, true);
                 if (!isPasswordsMatch(password, retry)) {
-                    errMsg.innerHTML = `<span class="message error-message">Passwords do not match</span>`;
+                    errMsg.innerText = errorMessagesTemplate.passwordMatch;
                     valid = false;
-                    form.password.classList.add('invalid');
-                    form.password.classList.remove('validate');
-                    form.passwordRetry.classList.add('invalid');
-                    form.passwordRetry.classList.remove('validate');
+                    classListCorrect(form.password, false);
+                    classListCorrect(form.passwordRetry, false);
                 } else {
-                    if (isValidPassword(retry)) {
-                        form.passwordRetry.classList.add('validate');
-                        form.passwordRetry.classList.remove('invalid');
-                    }
-                    form.password.classList.add('validate');
-                    form.password.classList.remove('invalid');
+                    if (isValidPassword(retry)) classListCorrect(form.passwordRetry, true);
+                    classListCorrect(form.password, true);
                 }
                 if (!isValidPassword(password)) {
-                    errMsg.innerHTML = `<span class="message error-message">Password is too short (minimum 6)</span>`;
+                    errMsg.innerText = errorMessagesTemplate.password;
                     valid = false;
-                    form.password.classList.add('invalid');
-                    form.password.classList.remove('validate');
+                    classListCorrect(form.password, false);
                 }
                 break;
+
             case "passwordRetry":
-                form.passwordRetry.classList.add('validate');
-                form.passwordRetry.classList.remove('invalid');
+                classListCorrect(form.passwordRetry, true);
                 if (!isPasswordsMatch(password, retry)) {
-                    errMsg.innerHTML = `<span class="message error-message">Passwords do not match</span>`;
+                    errMsg.innerText = errorMessagesTemplate.passwordMatch;
                     valid = false;
-                    form.passwordRetry.classList.add('invalid');
-                    form.passwordRetry.classList.remove('validate');
-                    form.password.classList.add('invalid');
-                    form.password.classList.remove('validate');
+                    classListCorrect(form.passwordRetry, false);
+                    classListCorrect(form.password, false);
                 } else {
-                    form.passwordRetry.classList.add('validate');
-                    form.passwordRetry.classList.remove('invalid');
-                    if (isValidPassword(password)) {
-                        form.password.classList.add('validate');
-                        form.password.classList.remove('invalid');
-                    }
+                    classListCorrect(form.passwordRetry, true);
+                    if (isValidPassword(password)) classListCorrect(form.password, true);
                 }
                 if (!isValidPassword(retry)) {
-                    errMsg.innerHTML = `<span class="message error-message">Password is too short (minimum 6)</span>`;
+                    errMsg.innerText = errorMessagesTemplate.password;
                     valid = false;
-                    form.passwordRetry.classList.add('invalid');
-                    form.passwordRetry.classList.remove('validate');
+                    classListCorrect(form.passwordRetry, false);
                 }
                 break;
         }
 
-        if (!isValidName(firstName) || !isValidName(lastName) || !isValidEmail(email) || !isValidDate(birthDate)) {
-            valid = false;
-        }
-        if (!isValidPassword(password) || !isValidPassword(retry) || !isPasswordsMatch(password, retry)) {
-             valid = false;
-        }
+        if (!isValidName(firstName) || !isValidName(lastName)
+                || !isValidEmail(email) || !isValidDate(birthDate)) valid = false;
+        if (!isValidPassword(password) || !isValidPassword(retry)
+                || !isPasswordsMatch(password, retry)) valid = false;
 
         submit.disabled = !valid;
     };
@@ -222,9 +212,7 @@
         try {
             const response = await fetch('/auth/signup', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json', },
                 body: JSON.stringify(signupData)
             });
 
@@ -236,9 +224,7 @@
                     window.location.href = '/signin';
                 }, 2000);
 
-            } else {
-                showMessage('error', result.message, result.error);
-            }
+            } else showMessage('error', result.message, result.error);
 
         } catch (error) {
             showMessage('error', error.message, 'Network error');
@@ -249,4 +235,5 @@
         errMsg.textContent = text || err;
         errMsg.className = type;
     }
+
 </script>

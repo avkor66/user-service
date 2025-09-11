@@ -1,56 +1,47 @@
-<nav class="teal lighten-3 z-depth-5">
-    <div class="nav-wrapper">
-        <div class="brand-logo" style="margin-left: 3rem; cursor: pointer">Logo</div>
-        <ul id="nav" class="right">
-            <li><a href="/profile">Profile</a></li>
-            <li><a href="/profile/edit">Edit profile</a></li>
-            <li><a href="/auth/logout">Logout</a></li>
-        </ul>
-    </div>
-</nav>
+{{> nav }}
 
     <div class="row" style="margin-top: 3rem; margin-bottom: 3rem;">
         <div class="col s7 offset-s1">
-        <table>
-            <thead>
-                <tr>
-                    <th>Full name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#if users.length}}
-                    {{#each users}}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Full name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if users.length}}
+                        {{#each users}}
+                            <tr>
+                                <td> {{fullName}}   </td>
+                                <td> {{email}} </td>
+                                <td> {{role}} </td>
+                                    {{#if isActive}}
+                                        <td class="green-text text-lighten-2 center" id="{{id}}">
+                                            Active
+                                        </td>
+                                    {{else}}
+                                        <td class="red-text text-lighten-2 center" id="{{id}}">
+                                            Inactive
+                                        </td>
+                                    {{/if}}
+                                <td><button data-target="modal1" class="btn modal-trigger right right-align modal-detal" data-id="{{id}}" id="{{id}}">Details</button></td>
+                            </tr>
+
+                        {{/each}}
+
+                    {{else}}
+
                         <tr>
-                            <td> {{fullName}}   </td>
-                            <td> {{email}} </td>
-                            <td> {{role}} </td>
-                                {{#if isActive}}
-                                    <td class="green-text text-lighten-2 center" id="{{id}}">
-                                        Active
-                                    </td>
-                                {{else}}
-                                    <td class="red-text text-lighten-2 center" id="{{id}}">
-                                        Inactive
-                                    </td>
-                                {{/if}}
-                            <td><button data-target="modal1" class="btn modal-trigger right right-align modal-detal" data-id="{{id}}" id="{{id}}">Details</button></td>
+                            <td>No data available</td>
                         </tr>
 
-                    {{/each}}
-
-                {{else}}
-
-                    <tr>
-                        <td>No data available</td>
-                    </tr>
-
-                {{/if}}
-            </tbody>
-        </table>
+                    {{/if}}
+                </tbody>
+            </table>
         </div>
         <div class="col s3 right right-align">
             <div class="card z-depth-0">
@@ -167,61 +158,51 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.querySelectorAll('.modal');
+        M.Modal.init(modal);
+    });
+    const modals = document.querySelectorAll('.modal-detal');
 
-document.addEventListener('DOMContentLoaded', function() {
-    var modal = document.querySelectorAll('.modal');
-    M.Modal.init(modal);
-});
+    modals.forEach(modal => {
+        const fullName = document.getElementById('fullName');
+        const email = document.getElementById('email');
+        const role = document.getElementById('role');
+        const createdAt = document.getElementById('createdAt');
+        const updatedAt = document.getElementById('updatedAt');
+        const birthDate = document.getElementById('birthDate');
+        const isActive = document.getElementById('isActive');
 
-const modals = document.querySelectorAll('.modal-detal');
-
-modals.forEach(modal => {
-    const fullName = document.getElementById('fullName');
-    const email = document.getElementById('email');
-    const role = document.getElementById('role');
-    const createdAt = document.getElementById('createdAt');
-    const updatedAt = document.getElementById('updatedAt');
-    const birthDate = document.getElementById('birthDate');
-    const isActive = document.getElementById('isActive');
-
-    modal.addEventListener('click', async (e) => {
-        const user = await (await fetch(`/users/${e.target.dataset.id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })).json();
-
-        fullName.innerText = user.fullName;
-        email.innerText = user.email;
-        role.innerText = user.role;
-        updatedAt.innerText = user.updatedAt.toString();
-        birthDate.innerText = user.birthDate.toString();
-        createdAt.innerText = user.createdAt.toString();
-        isActive.checked = user.isActive;
-
-        isActive.addEventListener('click', async (active) => {
-
-            const user = await (await fetch(`/users/${e.target.dataset.id}/${active.target.checked ? 'activate' : 'inactivate' }`, {
+        modal.addEventListener('click', async (e) => {
+            const user = await (await fetch(`/users/${e.target.dataset.id}`, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
             })).json();
-            const status = document.getElementById(user.id);
-            if (user.isActive) {
-                status.innerText = 'Active';
-                status.classList.add('green-text');
-                status.classList.remove('red-text');
-            } else {
-                status.innerText = 'Inactive';
-                status.classList.add('red-text');
-                status.classList.remove('green-text');
-            }
 
-        }, { once: true })
-    })
+            fullName.innerText = user.fullName;
+            email.innerText = user.email;
+            role.innerText = user.role;
+            updatedAt.innerText = user.updatedAt.toString();
+            birthDate.innerText = user.birthDate.toString();
+            createdAt.innerText = user.createdAt.toString();
+            isActive.checked = user.isActive;
 
-})
-
+            isActive.addEventListener('click', async (active) => {
+                const user = await (await fetch(`/users/${e.target.dataset.id}/${active.target.checked ? 'activate' : 'inactivate' }`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                })).json();
+                const status = document.getElementById(user.id);
+                if (user.isActive) {
+                    status.innerText = 'Active';
+                    status.classList.add('green-text');
+                    status.classList.remove('red-text');
+                } else {
+                    status.innerText = 'Inactive';
+                    status.classList.add('red-text');
+                    status.classList.remove('green-text');
+                }
+            }, { once: true })
+        })
+        })
 </script>

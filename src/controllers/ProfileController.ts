@@ -1,7 +1,7 @@
 import { Request, Response} from 'express';
-import {User} from "../models/User.ts";
-import {IAuthUserJWT, IUser} from "../interfaces/IUser.ts";
-import {ProfileService} from "../services/ProfileService.ts";
+import {User} from "../models/User";
+import {IAuthUserJWT, IUser} from "../interfaces/IUser";
+import {ProfileService} from "../services/ProfileService";
 
 export class ProfileController {
     static async getProfileData(req: Request, res: Response) {

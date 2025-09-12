@@ -1,7 +1,7 @@
 import { PassportStatic } from 'passport';
 import { Strategy as JwtStrategy } from "passport-jwt";
-import { User } from '../models/User.ts';
-import {IAuthUserJWT} from "../interfaces/IUser.ts";
+import { User } from '../models/User';
+import {IAuthUserJWT} from "../interfaces/IUser";
 
 const configurePassport = (passport: PassportStatic) => {
     const options = {

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { ProfileController } from "../controllers/ProfileController.ts";
-import {UserController} from "../controllers/UserController.ts";
+import { ProfileController } from "../controllers/ProfileController";
+import {UserController} from "../controllers/UserController";
 
 const profileRoutes = Router();
 

@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
-import { UserService } from '../services/UserService.ts';
-import {IAuthUserJWT, IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser.ts";
-import {User} from "../models/User.ts";
-import {ProfileService} from "../services/ProfileService.ts";
+import { UserService } from '../services/UserService';
+import {IAuthUserJWT, IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser";
+import {User} from "../models/User";
+import {ProfileService} from "../services/ProfileService";
 
 export class UserController {
 

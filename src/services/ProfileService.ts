@@ -1,4 +1,4 @@
-import {IUser, IUserProfile} from "../interfaces/IUser.ts";
+import {IUser, IUserProfile} from "../interfaces/IUser";
 
 export class ProfileService {
 

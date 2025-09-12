@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { User } from '../models/User.ts';
-import { UserService } from "../services/UserService.ts";
-import {IAuthUser, IUser, IUserCreate} from "../interfaces/IUser.ts";
+import { User } from '../models/User';
+import { UserService } from "../services/UserService";
+import {IAuthUser, IUser, IUserCreate} from "../interfaces/IUser";
 import jwt from  "jsonwebtoken";
 
 export class AuthController {

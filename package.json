@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --loader ts-node/esm ./src/index.ts",
-    "build": "rimraf ./dist && tsc --build ./tsconfig.json && tsc-alias",
+    "build": "rimraf ./dist && tsc --build ./tsconfig.json && tsc-alias && cp -r src/views dist/",
     "start": "node ./dist/index.js"
   },
   "dependencies": {

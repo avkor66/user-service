@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
-import { UserService } from '../services/UserService';
-import {IAuthUserJWT, IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser";
-import {User} from "../models/User";
-import {ProfileService} from "../services/ProfileService";
+import { UserService } from '../services/UserService.js';
+import {IAuthUserJWT, IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser.js";
+import {User} from "../models/User.js";
+import {ProfileService} from "../services/ProfileService.js";
 
 export class UserController {
 

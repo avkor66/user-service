@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { IUser } from '../interfaces/IUser';
+import { IUser } from '../interfaces/IUser.js';
 
 const UserSchema = new Schema<IUser>({
     lastName: { type: String, required: [true, "Фамилия обязательна"], trim: true, maxlength: [55, 'Не длиннее 55 символов'] },

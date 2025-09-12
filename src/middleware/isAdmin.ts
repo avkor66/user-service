@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {IAuthUserJWT} from "../interfaces/IUser";
+import {IAuthUserJWT} from "../interfaces/IUser.js";
 
 export class IsAdmin {
     static isAdmin(req: Request, res: Response, next: NextFunction) {

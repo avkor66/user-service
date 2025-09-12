@@ -7,11 +7,11 @@ import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import { fileURLToPath } from 'url';
 import { engine } from 'express-handlebars';
-import adminRoutes from './routes/AdminRoutes';
-import authRoutes from './routes/AuthRoutes';
-import profileRoutes from './routes/ProfileRoutes';
-import passportConfig from './middleware/passport';
-import { IsAdmin } from './middleware/isAdmin';
+import adminRoutes from './routes/AdminRoutes.js';
+import authRoutes from './routes/AuthRoutes.js';
+import profileRoutes from './routes/ProfileRoutes.js';
+import passportConfig from './middleware/passport.js';
+import { IsAdmin } from './middleware/isAdmin.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../.env') });

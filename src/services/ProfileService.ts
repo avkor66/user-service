@@ -1,4 +1,4 @@
-import {IUser, IUserProfile} from "../interfaces/IUser";
+import {IUser, IUserProfile} from "../interfaces/IUser.js";
 
 export class ProfileService {
 

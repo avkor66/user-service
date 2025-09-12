@@ -1,0 +1,239 @@
+<div class="row"  style="margin-top: 10rem">
+    <form class="col s12 m6 offset-m4" action="/auth/signup" method="post" id="signup-form" style="max-width: 35rem">
+        <div class="row" style="margin-bottom: 1rem;">
+            <div class="col s6 valign-wrapper">
+                <h4 class="valign-wrapper" style="margin: 0;">Sign Up</h4>
+            </div>
+            <div class="col s6 right-align">
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                    <a href="/auth/signin" style="text-decoration: none; color: white">Signin</a>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="first_name" type="text" name="firstName" class="validate">
+                <label for="first_name">First Name</label>
+            </div>
+            <div class="input-field col s12">
+                <input id="last_name" type="text" name="lastName" class="validate">
+                <label for="last_name">Last Name</label>
+            </div>
+            <div class="input-field col s12">
+                <input id="middle_name" type="text" name="middleName" class="validate">
+                <label for="middle_name">Middle Name</label>
+            </div>
+            <div class="input-field col s12">
+                <input id="email" type="email" name="email" class="validate">
+                <label for="email">Email</label>
+            </div>
+            <div class="input-field col s7">
+                <input id="birthday" type="date" name="birthDate" class="validate">
+                <label for="birthday">Date of birth</label>
+            </div>
+            <div class="input-field col s5 right-align" style="padding-top: 1rem">
+                <div class="switch">User is admin?
+                    <label>
+                        <input type="checkbox" id="role" name="role">
+                        <span class="lever"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="input-field col s12">
+                <input id="password" type="password" name="password" class="validate password">
+                <label for="password">Password</label>
+            </div>
+            <div class="input-field col s12">
+                <input id="passwordRetry" type="password" name="passwordRetry" class="validate password">
+                <label for="passwordRetry">Retry Password</label>
+            </div>
+            <div class="input-field col s12" style="height: 1rem">
+                <div id="error-message">
+                    <span class="message error-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn waves-effect waves-light" type="submit" id="submit" disabled>Submit
+            <i class="material-icons right">send</i>
+        </button>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('signup-form');
+    const submit = document.getElementById('submit');
+    const errMsg = document.getElementById('error-message').firstElementChild;
+
+    const isValidName = (val) => /^[A-Za-zА-яа-яЁё]+$/.test(val) && val.trim().length >= 2;
+    const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    const isValidDate = (val) => {
+        if (!val) return false;
+        const date = new Date(val);
+        const now = new Date();
+        return date.getFullYear() <= now.getFullYear() - 13
+                && date.getFullYear() >= now.getFullYear() - 100;
+    };
+    const isValidPassword = (val) => val && val.length >= 6;
+    const isPasswordsMatch = (pwd, retry) => pwd === retry;
+
+    const classListCorrect = (form, isValid) => {
+        if (isValid) {
+            form.classList.add('validate');
+            form.classList.remove('invalid');
+        } else {
+            form.classList.add('invalid');
+            form.classList.remove('validate');
+        }
+    };
+
+    const errorMessagesTemplate = {
+        name: 'Invalid name (at least 2 characters)',
+        middle: 'Incorrect characters in middlename',
+        email: 'Invalid Email',
+        birth: 'Invalid date of birth (less than 13 years)',
+        password: 'Password is too short (minimum 6)',
+        passwordMatch: 'Passwords do not match'
+    };
+
+    const validateForm = (eventForm) => {
+        const firstName = form.firstName.value;
+        const lastName = form.lastName.value;
+        const middleName = form.middleName.value;
+        const email = form.email.value;
+        const birthDate = form.birthDate.value;
+        const password = form.password.value;
+        const retry = form.passwordRetry.value;
+
+        let valid = true;
+        errMsg.innerText = '';
+
+        switch (eventForm) {
+            case "firstName":
+                if (!isValidName(firstName)) {
+                    valid = false;
+                    errMsg.innerText = errorMessagesTemplate.name;
+                    classListCorrect(form.firstName, false);
+                } else classListCorrect(form.firstName, true);
+                break;
+
+            case "lastName":
+                if (!isValidName(lastName)) {
+                    valid = false;
+                    errMsg.innerText = errorMessagesTemplate.name;
+                    classListCorrect(form.lastName, false);
+                } else classListCorrect(form.lastName, true);
+                break;
+
+            case "middleName":
+                if (!/^[A-Za-zА-яа-яЁё]+$/.test(middleName)) {
+                    valid = false;
+                    errMsg.innerText = errorMessagesTemplate.middle;
+                    classListCorrect(form.middleName, false);
+                } else classListCorrect(form.middleName, true);
+                break;
+
+            case "email":
+                if (!isValidEmail(email)) {
+                    valid = false;
+                    errMsg.innerText = errorMessagesTemplate.email;
+                    classListCorrect(form.email, false);
+                } else classListCorrect(form.email, true);
+                break;
+
+            case "birthDate":
+                if (!isValidDate(birthDate)) {
+                    valid = false;
+                    errMsg.innerText = errorMessagesTemplate.birth;
+                    classListCorrect(form.birthDate, false);
+                } else classListCorrect(form.birthDate, true);
+                break;
+
+            case "password":
+                classListCorrect(form.password, true);
+                if (!isPasswordsMatch(password, retry)) {
+                    errMsg.innerText = errorMessagesTemplate.passwordMatch;
+                    valid = false;
+                    classListCorrect(form.password, false);
+                    classListCorrect(form.passwordRetry, false);
+                } else {
+                    if (isValidPassword(retry)) classListCorrect(form.passwordRetry, true);
+                    classListCorrect(form.password, true);
+                }
+                if (!isValidPassword(password)) {
+                    errMsg.innerText = errorMessagesTemplate.password;
+                    valid = false;
+                    classListCorrect(form.password, false);
+                }
+                break;
+
+            case "passwordRetry":
+                classListCorrect(form.passwordRetry, true);
+                if (!isPasswordsMatch(password, retry)) {
+                    errMsg.innerText = errorMessagesTemplate.passwordMatch;
+                    valid = false;
+                    classListCorrect(form.passwordRetry, false);
+                    classListCorrect(form.password, false);
+                } else {
+                    classListCorrect(form.passwordRetry, true);
+                    if (isValidPassword(password)) classListCorrect(form.password, true);
+                }
+                if (!isValidPassword(retry)) {
+                    errMsg.innerText = errorMessagesTemplate.password;
+                    valid = false;
+                    classListCorrect(form.passwordRetry, false);
+                }
+                break;
+        }
+
+        if (!isValidName(firstName) || !isValidName(lastName)
+                || !isValidEmail(email) || !isValidDate(birthDate)) valid = false;
+        if (!isValidPassword(password) || !isValidPassword(retry)
+                || !isPasswordsMatch(password, retry)) valid = false;
+
+        submit.disabled = !valid;
+    };
+
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('change', (i) => validateForm(i.target.name));
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const signupData = {
+            firstName: form.firstName.value,
+            lastName: form.lastName.value,
+            middleName: form.middleName.value,
+            email: form.email.value,
+            birthDate: form.birthDate.value,
+            role: form.role.checked ? 'admin' : 'user',
+            password: form.password.value
+        }
+        try {
+            const response = await fetch('/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', },
+                body: JSON.stringify(signupData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+
+                showMessage('success', result.message, result.error);
+                setTimeout(() => {
+                    window.location.href = '/auth/signin';
+                }, 2000);
+
+            } else showMessage('error', result.message, result.error);
+
+        } catch (error) {
+            showMessage('error', error.message, 'Network error');
+        }
+    });
+
+    function showMessage(type, text, err) {
+        errMsg.textContent = text || err;
+        errMsg.className = type;
+    }
+
+</script>

@@ -1,0 +1,128 @@
+<div class="row" style="margin-top: 10rem">
+    <form class="col s12 m6 offset-m4" action="/auth/signin" method="post" id="signin-form" style="max-width: 35rem">
+        <div class="row" style="margin-bottom: 1rem;">
+            <div class="col s6 valign-wrapper">
+                <h4 class="valign-wrapper" style="margin: 0;">Sign In</h4>
+            </div>
+            <div class="col s6 right-align">
+                <button class="btn waves-effect waves-light" type="submit">
+                    <a href="/auth/signup" style="text-decoration: none; color: white">Signup</a>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="email" name="email" type="email" class="validate">
+                <label for="email">Email</label>
+            </div>
+            <div class="input-field col s12">
+                <input id="password" name="password" type="password" class="validate">
+                <label for="password">Password</label>
+            </div>
+            <div class="input-field col s12" style="height: 1rem">
+                <div id="error-message"></div>
+            </div>
+        </div>
+        <button class="btn waves-effect waves-light" type="submit" id="submit" disabled>Submit
+            <i class="material-icons right">send</i>
+        </button>
+    </form>
+</div>
+
+<script>
+
+    const form = document.getElementById('signin-form');
+    const submit = document.getElementById('submit');
+    const errMsg = document.getElementById('error-message');
+
+    const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    const isValidPassword = (val) => val && val.length >= 6;
+
+    const classListCorrect = (form, isValid) => {
+        if (isValid) {
+            form.classList.add('validate');
+            form.classList.remove('invalid');
+        } else {
+            form.classList.add('invalid');
+            form.classList.remove('validate');
+        }
+    }
+
+    const errorMessagesTemplate = {
+        email: '<span class="message error-message">Invalid Email</span>',
+        password: '<span class="message error-message">Password is too short (minimum 6)</span>'
+    }
+
+    const validateForm = (eventForm) => {
+        const email = form.email.value;
+        const password = form.password.value;
+
+        let valid = true;
+        errMsg.innerHTML = '';
+
+        switch (eventForm) {
+            case "email":
+                if (!isValidEmail(email)) {
+                    valid = false;
+                    errMsg.innerHTML = errorMessagesTemplate.email;
+                    classListCorrect(form.email, false);
+                    form.email.classList.add('invalid');
+                    form.email.classList.remove('validate');
+                } else {
+                    classListCorrect(form.email, true);
+                    form.email.classList.add('validate');
+                    form.email.classList.remove('invalid');
+                }
+                break;
+
+            case "password":
+                classListCorrect(form.password, true);
+                if (!isValidPassword(password)) {
+                    errMsg.innerHTML = errorMessagesTemplate.password;
+                    valid = false;
+                    classListCorrect(form.password, false);
+                }
+                break;
+        }
+
+        if (!isValidPassword(password) || !isValidEmail(email)) valid = false;
+
+        submit.disabled = !valid;
+    };
+
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('change', (i) => validateForm(i.target.name));
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const loginData = {
+            email: form.email.value,
+            password: form.password.value
+        }
+        try {
+            const response = await fetch('/auth/signin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(loginData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+
+                showMessage('success', result.message);
+                window.location.href = '/profile';
+
+            } else showMessage('error', result.message);
+
+        } catch (error) {
+            showMessage('error', 'Network error');
+        }
+    });
+
+    function showMessage(type, text) {
+        errMsg.textContent = text;
+        errMsg.className = type;
+    }
+
+</script>

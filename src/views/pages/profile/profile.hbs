@@ -1,0 +1,46 @@
+{{> nav }}
+
+<div class="container" style="margin-top: 6rem; width: 40vw">
+    <div class="grey lighten-3">
+        <h4 class="center-align" style="padding: 0.5rem 0">User profile</h4>
+        <div class="card z-depth-0">
+            <ul class="collapsible">
+                <li>
+                    <div class="collapsible-header">
+                        Full name<span class="badge">{{user.fullName}}</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">
+                        Date of birth<span class="badge">{{user.birthDate}}</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">
+                        Email<span class="badge">{{user.email}}</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">
+                        Role<span class="badge">{{user.role}}</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">
+                        Active
+                        {{#if user.isActive}}
+                            <span class="badge green-text">Yes</span>
+                        {{else}}
+                            <span class="badge red-text">No</span>
+                        {{/if}}
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header">
+                        Registration<span class="badge">{{user.createdAt}}</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

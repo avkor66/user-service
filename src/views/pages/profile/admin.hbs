@@ -1,0 +1,209 @@
+{{> nav }}
+
+    <div class="row" style="margin-top: 3rem; margin-bottom: 3rem;">
+        <div class="col s7 offset-s1">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Full name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if users.length}}
+                        {{log "USERS DATA:" users}}
+                        {{#each users}}
+                            <tr>
+                                <td> {{fullName}}   </td>
+                                <td> {{email}} </td>
+                                <td> {{role}} </td>
+                                    {{#if isActive}}
+                                        <td class="green-text text-lighten-2 center" id="{{id}}">
+                                            Active
+                                        </td>
+                                    {{else}}
+                                        <td class="red-text text-lighten-2 center" id="{{id}}">
+                                            Inactive
+                                        </td>
+                                    {{/if}}
+                                <td><button data-target="modal1" class="btn modal-trigger right right-align modal-detal" data-id="{{id}}" id="{{id}}">Details</button></td>
+                            </tr>
+
+                        {{/each}}
+
+                    {{else}}
+
+                        <tr>
+                            <td>No data available</td>
+                        </tr>
+
+                    {{/if}}
+                </tbody>
+            </table>
+        </div>
+        <div class="col s3 right right-align">
+            <div class="card z-depth-0">
+                <ul class="collapsible">
+                    <li>
+                        <div class="collapsible-header">
+                            CURRENT ADMINISTRATOR
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Full name
+                            <span class="badge">{{admin.fullName}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Date of birth
+                            <span class="badge">{{admin.birthDate}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Email
+                            <span class="badge">{{admin.email}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Role
+                            <span class="badge">{{admin.role}}</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Active
+                            {{#if admin.isActive}}
+                                <span class="badge green-text">Yes</span>
+                            {{else}}
+                                <span class="badge red-text">No</span>
+                            {{/if}}
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header">
+                            Registration
+                            <span class="badge">{{admin.createdAt}}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal Structure -->
+<div id="modal1" class="modal" style="max-width: 40rem;">
+    <div class="modal-content">
+        <h4>User details</h4>
+        <ul class="collapsible z-depth-0">
+            <li>
+                <div class="collapsible-header">
+                    Full name
+                    <span class="badge" id="fullName"></span>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">
+                    Date of birth
+                    <span class="badge" id="birthDate"></span>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">
+                    Email
+                    <span class="badge" id="email"></span>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">
+                    Role
+                    <span class="badge" id="role"></span>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">
+                    Active
+                    <span class="badge green-text">
+                        <div class="switch">
+                            <label>
+                                <input type="checkbox" id="isActive">
+                                <span class="lever"></span>
+                            </label>
+                        </div>
+                    </span>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">
+                    Registration
+                    <span class="badge" id="createdAt"></span>
+                </div>
+            </li>
+            <li>
+                <div class="collapsible-header">
+                    Last update
+                    <span class="badge" id="updatedAt"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="modal-close waves-effect waves-red btn-flat">Close</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.querySelectorAll('.modal');
+        M.Modal.init(modal);
+    });
+    const modals = document.querySelectorAll('.modal-detal');
+
+    modals.forEach(modal => {
+        const fullName = document.getElementById('fullName');
+        const email = document.getElementById('email');
+        const role = document.getElementById('role');
+        const createdAt = document.getElementById('createdAt');
+        const updatedAt = document.getElementById('updatedAt');
+        const birthDate = document.getElementById('birthDate');
+        const isActive = document.getElementById('isActive');
+
+        modal.addEventListener('click', async (e) => {
+            const user = await (await fetch(`/admin/${e.target.dataset.id}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            })).json();
+
+            fullName.innerText = user.fullName;
+            email.innerText = user.email;
+            role.innerText = user.role;
+            updatedAt.innerText = user.updatedAt.toString();
+            birthDate.innerText = user.birthDate.toString();
+            createdAt.innerText = user.createdAt.toString();
+            isActive.checked = user.isActive;
+
+            isActive.addEventListener('click', async (active) => {
+                const user = await (await fetch(`/admin/${e.target.dataset.id}/${active.target.checked ? 'activate' : 'inactivate' }`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                })).json();
+                const status = document.getElementById(user.id);
+                if (user.isActive) {
+                    status.innerText = 'Active';
+                    status.classList.add('green-text');
+                    status.classList.remove('red-text');
+                } else {
+                    status.innerText = 'Inactive';
+                    status.classList.add('red-text');
+                    status.classList.remove('green-text');
+                }
+            }, { once: true })
+        })
+        })
+</script>

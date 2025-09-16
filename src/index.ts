@@ -12,12 +12,17 @@ import authRoutes from './routes/AuthRoutes.js';
 import profileRoutes from './routes/ProfileRoutes.js';
 import passportConfig from './middleware/passport.js';
 import { IsAdmin } from './middleware/isAdmin.js';
+import cors from 'cors';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const port = process.env.PORT || 3000;
+var corsOptions = {
+    origin: 'http://localhost:4200',
+    optionsSuccessStatus: 200
+}
 
 app.engine('.hbs', engine({extname: '.hbs'}));
 app.set('view engine', '.hbs');
@@ -45,7 +50,7 @@ app.use(passport.initialize());
 passportConfig(passport);
 
 app.get('/', (req, res) => res.redirect('/auth/signin'));
-app.use('/auth', authRoutes);
+app.use('/auth', cors(corsOptions), authRoutes);
 app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
 app.use('/admin', passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
 

@@ -21,7 +21,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 var corsOptions = {
     origin: 'http://localhost:4200',
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    credentials: true,
 }
 
 app.engine('.hbs', engine({extname: '.hbs'}));
@@ -51,8 +52,8 @@ passportConfig(passport);
 
 app.get('/', (req, res) => res.redirect('/auth/signin'));
 app.use('/auth', cors(corsOptions), authRoutes);
-app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
-app.use('/admin', passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
+app.use('/profile', cors(corsOptions), passport.authenticate('jwt', {session: false}), profileRoutes);
+app.use('/admin', cors(corsOptions), passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
 
 app.use((req, res, next) => {
     res.status(404);

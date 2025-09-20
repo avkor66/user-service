@@ -14,7 +14,6 @@
                 </thead>
                 <tbody>
                     {{#if users.length}}
-                        {{log "USERS DATA:" users}}
                         {{#each users}}
                             <tr>
                                 <td> {{fullName}}   </td>
@@ -205,5 +204,5 @@
                 }
             }, { once: true })
         })
-        })
+    })
 </script>

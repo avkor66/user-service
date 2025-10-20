@@ -26,8 +26,6 @@ const corsOptions = {
     credentials: true,
 }
 
-app.use(cors(corsOptions));
-
 app.engine('.hbs', engine({extname: '.hbs'}));
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, '/views'));
@@ -54,9 +52,9 @@ app.use(passport.initialize());
 passportConfig(passport);
 
 app.get('/', (req, res) => res.redirect('/auth/signin'));
-app.use('/auth', authRoutes);
-app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
-app.use('/admin', passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
+app.use('/auth', cors(corsOptions), authRoutes);
+app.use('/profile', cors(corsOptions), passport.authenticate('jwt', {session: false}), profileRoutes);
+app.use('/admin', cors(corsOptions), passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
 
 app.use((req, res, next) => {
     res.status(404);

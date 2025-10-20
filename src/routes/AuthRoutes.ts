@@ -6,6 +6,7 @@ const authRoutes = Router();
 authRoutes.get('/signin', AuthController.authRenderSignin);
 authRoutes.get('/signup', AuthController.authRenderSignup);
 authRoutes.post('/signin', AuthController.authSignin);
+authRoutes.options('/signin', AuthController.authSignin);
 authRoutes.post('/refresh', AuthController.authRefreshToken);
 authRoutes.post('/signup', AuthController.authSignup);
 authRoutes.get('/logout', AuthController.logout);

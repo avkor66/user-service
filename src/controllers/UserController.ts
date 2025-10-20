@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import { UserService } from '../services/UserService.js';
-import {IAuthUserJWT, IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser.js";
+import {IAuthUserJWT, IUser, IUserCreate, IUsersAll, IUserUpdate} from "../interfaces/IUser.js";
 import {User} from "../models/User.js";
 import {ProfileService} from "../services/ProfileService.js";
 
@@ -13,14 +13,14 @@ export class UserController {
             if (userDB === null) {
                 res.render('pages/auth/signin', {title: 'Signin'});
             }
-            const users: IUser[] = await UserService.getAllUsers()
+            const users: IUsersAll = await UserService.getAllUsers()
             if (userDB === null) {
                 res.render('pages/auth/signin', {title: 'Signin'});
             } else {
                 res.render('pages/profile/admin', {
                     title: 'Admin',
                     admin: ProfileService.userEditorForProfile(userDB),
-                    users: users.map((value: IUser) => UserService.usersEditorForAdmin(value)),
+                    users: users.users.map((value: IUser) => UserService.usersEditorForAdmin(value)),
                 })
             }
         } catch (error) {
@@ -78,7 +78,7 @@ export class UserController {
 
     static async getAllUsers(req: Request, res: Response) {
         try {
-            const users: IUser[] = await UserService.getAllUsers();
+            const users: IUsersAll = await UserService.getAllUsers();
             if (!users) {
                 return res.status(404).json({ error: 'Users not found' });
             }
@@ -109,6 +109,27 @@ export class UserController {
             }
         }
     }
+    static async updateUserSettings(req: Request, res: Response) {
+        try {
+            const authUser = req.user as IAuthUserJWT;
+            const newDataUser: IUserUpdate = emptyFieldsObjectDelete(req.body);
+            const user: IUser | null = await UserService.updateUser(authUser.id, newDataUser);
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            res.status(202).json({
+                success: true,
+                message: 'Settings updated successfully'
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({ error: error.message });
+            } else {
+                res.status(400).json({ error: 'Unknown error' });
+            }
+        }
+    }
+
 
     static async deleteUser(req: Request, res: Response) {
         try {

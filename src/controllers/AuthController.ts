@@ -71,25 +71,58 @@ export class AuthController {
                     message: 'Password incorrect',
                 });
             }
-            const token: String = jwt.sign({
-                email: user.email,
-                userId: user._id,
-            }, process.env.JWT_SECRET!, {expiresIn: 60 * 60 * 24});
-
-            const refreshToken = jwt.sign(
-                { id: user.id },
-                process.env.JWT_REFRESH_SECRET!,
-                { expiresIn: "7d" }
+            const token: String = jwt.sign({userId: user.id,}, process.env.JWT_SECRET!, {expiresIn:60*60*24});
+            const refreshToken = jwt.sign({id: user.id}, process.env.JWT_REFRESH_SECRET!, {expiresIn:"7d"}
             );
 
             res.cookie("auth_token", token, {
-                httpOnly: true,
                 secure: false,
                 sameSite: "strict",
                 maxAge: 24 * 60 * 60 * 1000
             });
             res.cookie("refresh_token", refreshToken, {
-                httpOnly: true,
+                secure: false,
+                sameSite: "strict",
+                maxAge: 14 * 24 * 60 * 60 * 1000
+            });
+            res.status(200).json({
+                success: true,
+                message: 'Login successful',
+                auth_token: token,
+                refresh_token: refreshToken
+            });
+
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({ error: error.message });
+            } else {
+                res.status(400).json({ error: 'Unknown error' });
+            }
+        }
+
+    }
+
+    static async authRefreshToken(req: Request, res: Response) {
+
+        try {
+
+            const refresh_token = req.body.refresh_token;
+
+            if (!refresh_token) {
+                return res.status(401).json({ message: "Refresh token required" });
+            }
+
+            const payload = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET!) as any;
+            const token: String = jwt.sign({userId: payload.id}, process.env.JWT_SECRET!, {expiresIn:60*60*24});
+            const refreshToken = jwt.sign({id: payload.id}, process.env.JWT_REFRESH_SECRET!, {expiresIn:"7d"});
+
+            res.cookie("auth_token", token, {
+                secure: false,
+                sameSite: "strict",
+                maxAge: 24 * 60 * 60 * 1000
+            });
+
+            res.cookie("refresh_token", refreshToken, {
                 secure: false,
                 sameSite: "strict",
                 maxAge: 14 * 24 * 60 * 60 * 1000
@@ -139,60 +172,6 @@ export class AuthController {
                     success: false,
                     message: 'Unknown error'
                 });
-            }
-        }
-
-    }
-
-    static async authRefreshToken(req: Request, res: Response) {
-
-        try {
-
-            const refresh_token = req.cookies['refresh_token'];
-
-            if (!refresh_token) {
-                return res.status(401).json({ message: "Refresh token required" });
-            }
-
-            const payload = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET!) as any;
-
-            const token: String = jwt.sign({
-                email: payload.email,
-                userId: payload._id,
-            }, process.env.JWT_SECRET!, {expiresIn: 60 * 60 * 24});
-
-            const refreshToken = jwt.sign(
-                { id: payload.id },
-                process.env.JWT_REFRESH_SECRET!,
-                { expiresIn: "7d" }
-            );
-
-            res.cookie("auth_token", token, {
-                httpOnly: true,
-                secure: false,
-                sameSite: "strict",
-                maxAge: 24 * 60 * 60 * 1000
-            });
-
-            res.cookie("refresh_token", refreshToken, {
-                httpOnly: true,
-                secure: false,
-                sameSite: "strict",
-                maxAge: 14 * 24 * 60 * 60 * 1000
-            });
-
-            res.json({
-                success: true,
-                message: 'Login successful',
-                auth_token: token,
-                refresh_token: refreshToken
-            });
-
-        } catch (error) {
-            if (error instanceof Error) {
-                res.status(400).json({ error: error.message });
-            } else {
-                res.status(400).json({ error: 'Unknown error' });
             }
         }
 

@@ -20,7 +20,7 @@ config({ path: path.resolve(__dirname, '../.env') });
 const app = express();
 const port = process.env.PORT || 3000;
 var corsOptions = {
-    origin: 'http://localhost:4200',
+    origin: process.env.CORS_ORIGIN,
     optionsSuccessStatus: 200,
     credentials: true,
 }

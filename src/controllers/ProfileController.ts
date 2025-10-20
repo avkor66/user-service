@@ -24,6 +24,26 @@ export class ProfileController {
             }
         }
     }
+    static async getProfileForId(req: Request, res: Response) {
+        try {
+            const userId = req.params.id as string;
+            const userDB: IUser | null = await User.findById(userId)
+            if (userDB === null) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown user'
+                });
+            } else {
+                res.status(200).json(userDB);
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({ error: error.message });
+            } else {
+                res.status(400).json({ error: 'Неизвестная ошибка' });
+            }
+        }
+    }
     static async getProfileData(req: Request, res: Response) {
         try {
             const authUserJwt = req.user as IAuthUserJWT;

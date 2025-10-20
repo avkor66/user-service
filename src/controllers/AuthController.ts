@@ -76,13 +76,11 @@ export class AuthController {
             );
 
             res.cookie("auth_token", token, {
-                httpOnly: true,
                 secure: false,
                 sameSite: "strict",
                 maxAge: 24 * 60 * 60 * 1000
             });
             res.cookie("refresh_token", refreshToken, {
-                httpOnly: true,
                 secure: false,
                 sameSite: "strict",
                 maxAge: 14 * 24 * 60 * 60 * 1000
@@ -119,14 +117,12 @@ export class AuthController {
             const refreshToken = jwt.sign({id: payload.id}, process.env.JWT_REFRESH_SECRET!, {expiresIn:"7d"});
 
             res.cookie("auth_token", token, {
-                httpOnly: true,
                 secure: false,
                 sameSite: "strict",
                 maxAge: 24 * 60 * 60 * 1000
             });
 
             res.cookie("refresh_token", refreshToken, {
-                httpOnly: true,
                 secure: false,
                 sameSite: "strict",
                 maxAge: 14 * 24 * 60 * 60 * 1000

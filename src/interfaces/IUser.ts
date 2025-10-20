@@ -15,6 +15,13 @@ export interface IUser extends Document {
     getFullName(): string;
 }
 
+export interface IUsersAll {
+    users: IUser[];
+    total: number;
+    pages: number;
+    page: number;
+}
+
 export interface IUserCreate {
     lastName: string;
     firstName: string;

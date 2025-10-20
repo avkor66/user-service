@@ -10,8 +10,20 @@ export class UserService {
     static async findById(id: string) {
         return await User.findById(id);
     }
-    static async getAllUsers() {
-        return await User.find() as IUser[];
+    static async getAllUsers(page: number = 1, limit: number = 10) {
+        const skip = (page - 1) * limit;
+
+        const [users, total] = await Promise.all([
+            User.find().skip(skip).limit(limit),
+            User.countDocuments()
+        ]);
+
+        return {
+            users,
+            total,
+            pages: Math.ceil(total / limit),
+            page: page
+        };
     }
     static async updateUser(id: string, updateUserData: IUserUpdate) {
         return await User.findByIdAndUpdate(id, updateUserData, {new: true, runValidators: false});

@@ -20,7 +20,8 @@ config({ path: path.resolve(__dirname, '../.env') });
 const app = express();
 const port = process.env.PORT || 3000;
 var corsOptions = {
-    origin: process.env.CORS_ORIGIN,
+    origin: ['http://localhost:4200', 'http://localhost:3000', 'https://68f0a0af1f19d5eaa3111693--coruscating-dragon-a7ea37.netlify.app'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     optionsSuccessStatus: 200,
     credentials: true,
 }

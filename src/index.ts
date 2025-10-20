@@ -19,12 +19,14 @@ config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const port = process.env.PORT || 3000;
-var corsOptions = {
+const corsOptions = {
     origin: ['http://localhost:4200', 'http://localhost:3000', 'https://68f0a0af1f19d5eaa3111693--coruscating-dragon-a7ea37.netlify.app'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     optionsSuccessStatus: 200,
     credentials: true,
 }
+
+app.use(cors(corsOptions));
 
 app.engine('.hbs', engine({extname: '.hbs'}));
 app.set('view engine', '.hbs');
@@ -52,9 +54,9 @@ app.use(passport.initialize());
 passportConfig(passport);
 
 app.get('/', (req, res) => res.redirect('/auth/signin'));
-app.use('/auth', cors(corsOptions), authRoutes);
-app.use('/profile', cors(corsOptions), passport.authenticate('jwt', {session: false}), profileRoutes);
-app.use('/admin', cors(corsOptions), passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
+app.use('/auth', authRoutes);
+app.use('/profile', passport.authenticate('jwt', {session: false}), profileRoutes);
+app.use('/admin', passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
 
 app.use((req, res, next) => {
     res.status(404);
@@ -67,7 +69,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     res.render('pages/errors/500', { title: 'Ошибка сервера', error: err });
 });
 
-app.listen(port, () => {
+app.listen(3000, '0.0.0.0', () => {
     console.info(`Listening at http://localhost:${port}`)
 });
 

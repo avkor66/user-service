@@ -46,8 +46,10 @@ export class ProfileController {
     }
     static async getProfileData(req: Request, res: Response) {
         try {
+            // console.log('reqUser: ', req.user);
             const authUserJwt = req.user as IAuthUserJWT;
             const userDB: IUser | null = await User.findById(authUserJwt.id)
+            // console.log('userDB: ', userDB);
             if (userDB === null) {
                 res.render('pages/auth/signin', {title: 'Signin'});
             } else {
@@ -55,6 +57,29 @@ export class ProfileController {
                     title: 'Profile',
                     user: ProfileService.userEditorForProfile(userDB),
                 })
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({ error: error.message });
+            } else {
+                res.status(400).json({ error: 'Неизвестная ошибка' });
+            }
+        }
+    }
+    static async getProfileForHeader(req: Request, res: Response) {
+        try {
+            const authUserJwt = req.user as IAuthUserJWT;
+            const userDB: IUser | null = await User.findById(authUserJwt.id)
+            if (userDB === null) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown user'
+                });
+            } else {
+                res.status(200).json({
+                    name: userDB.firstName,
+                    email: userDB.email
+                });
             }
         } catch (error) {
             if (error instanceof Error) {

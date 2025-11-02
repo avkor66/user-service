@@ -14,7 +14,9 @@ const configurePassport = (passport: PassportStatic) => {
     passport.use(
         new JwtStrategy(options, async (payload, done) => {
             try {
+                // console.log('Payload in passport: ', payload);
                 const user = await User.findById(payload.userId).select('email id role');
+                // console.log('User: ', user);
                 if (user) {
                     const authUser: IAuthUserJWT = { id: user.id, email: user.email, role: user.role };
                     return done(null, authUser);

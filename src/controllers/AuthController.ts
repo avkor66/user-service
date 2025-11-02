@@ -89,7 +89,12 @@ export class AuthController {
                 success: true,
                 message: 'Login successful',
                 auth_token: token,
-                refresh_token: refreshToken
+                refresh_token: refreshToken,
+                user: {
+                    id: user.id,
+                    name: user.firstName,
+                    email: user.email
+                }
             });
 
         } catch (error) {
@@ -159,7 +164,12 @@ export class AuthController {
             const user: IUser = await UserService.createUser(userData);
             res.status(201).json({
                 success: true,
-                message: 'User created'
+                message: 'User created',
+                user: {
+                    id: user.id,
+                    name: user.firstName,
+                    email: user.email
+                }
             });
         } catch (error) {
             if (error instanceof Error) {
@@ -172,6 +182,115 @@ export class AuthController {
                     success: false,
                     message: 'Unknown error'
                 });
+            }
+        }
+
+    }
+
+    static async authRegister(req: Request, res: Response) {
+
+        try {
+            const userData: IUserCreate = {
+                lastName: 'none',
+                firstName: req.body.name,
+                middleName: ' ',
+                birthDate: new Date(2002,2, 1 ),
+                email: req.body.email,
+                password: req.body.password,
+                role: 'user'
+            };
+
+            const emailExists = await UserService.isEmailExists(userData.email);
+
+            if (emailExists) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Email already exists'
+                });
+            }
+            const user: IUser = await UserService.createUser(userData);
+            console.log(user);
+            res.status(201).json({
+                success: true,
+                message: 'User created',
+                user: {
+                    id: user.id,
+                    name: user.firstName,
+                    email: user.email
+                }
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({
+                    success: false,
+                    message: error.message
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown error'
+                });
+            }
+        }
+
+    }
+
+    static async authLogin(req: Request, res: Response) {
+
+        try {
+
+            const authData: IAuthUser = req.body;
+            const user: IUser | null = await User.findOne({ email: authData.email.toLowerCase() });
+            if (!user) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email not found'
+                });
+            }
+            if (!user.isActive) {
+                res.status(400).json({
+                    success: false,
+                    message: 'The user is inactive',
+                });
+            }
+            const isPasswordValid: Boolean = await user.comparePassword(authData.password);
+            if (!isPasswordValid) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Password incorrect',
+                });
+            }
+            const token: String = jwt.sign({userId: user.id,}, process.env.JWT_SECRET!, {expiresIn:60*60*24});
+            const refreshToken = jwt.sign({id: user.id}, process.env.JWT_REFRESH_SECRET!, {expiresIn:"7d"}
+            );
+
+            // res.cookie("auth_token", token, {
+            //     secure: false,
+            //     sameSite: "strict",
+            //     maxAge: 24 * 60 * 60 * 1000
+            // });
+            // res.cookie("refresh_token", refreshToken, {
+            //     secure: false,
+            //     sameSite: "strict",
+            //     maxAge: 14 * 24 * 60 * 60 * 1000
+            // });
+            res.status(200).json({
+                success: true,
+                message: 'Login successful',
+                auth_token: token,
+                refresh_token: refreshToken,
+                user: {
+                    id: user.id,
+                    name: user.firstName,
+                    email: user.email
+                }
+            });
+
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({ error: error.message });
+            } else {
+                res.status(400).json({ error: 'Unknown error' });
             }
         }
 

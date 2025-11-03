@@ -18,7 +18,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 const corsOptions = {
     origin: ['http://localhost:4200', 'http://localhost:3000', 'https://68f0a0af1f19d5eaa3111693--coruscating-dragon-a7ea37.netlify.app'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
@@ -67,7 +67,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     res.render('pages/errors/500', { title: 'Ошибка сервера', error: err });
 });
 
-app.listen(3000, '0.0.0.0', () => {
+app.listen(8080, '0.0.0.0', () => {
     console.info(`Listening at http://localhost:${port}`)
 });
 

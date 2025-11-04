@@ -8,7 +8,7 @@ const configurePassport = (passport: PassportStatic) => {
         jwtFromRequest: (req: any) => {
             return req && req.cookies ? req.cookies.auth_token : null;
         },
-        secretOrKey: process.env.JWT_SECRET!
+        secretOrKey: process.env.USER_SERVICE_JWT_SECRET!
     };
 
     passport.use(

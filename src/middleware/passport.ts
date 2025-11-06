@@ -2,13 +2,14 @@ import { PassportStatic } from 'passport';
 import { Strategy as JwtStrategy } from "passport-jwt";
 import { User } from '../models/User.js';
 import {IAuthUserJWT} from "../interfaces/IUser.js";
+import {config} from "../config/config.js";
 
 const configurePassport = (passport: PassportStatic) => {
     const options = {
         jwtFromRequest: (req: any) => {
             return req && req.cookies ? req.cookies.auth_token : null;
         },
-        secretOrKey: process.env.USER_SERVICE_JWT_SECRET!
+        secretOrKey: config.JWT_SECRET!
     };
 
     passport.use(

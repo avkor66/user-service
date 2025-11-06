@@ -3,6 +3,7 @@ import { User } from '../models/User.js';
 import { UserService } from "../services/UserService.js";
 import {IAuthUser, IUser, IUserCreate} from "../interfaces/IUser.js";
 import jwt from  "jsonwebtoken";
+import {config} from "../config/config.js";
 
 export class AuthController {
 
@@ -71,8 +72,8 @@ export class AuthController {
                     message: 'Password incorrect',
                 });
             }
-            const token: String = jwt.sign({userId: user.id,}, process.env.USER_SERVICE_JWT_SECRET!, {expiresIn:60*60*24});
-            const refreshToken = jwt.sign({id: user.id}, process.env.USER_SERVICE_JWT_REFRESH_SECRET!, {expiresIn:"7d"}
+            const token: String = jwt.sign({userId: user.id,}, config.JWT_SECRET!, {expiresIn:60*60*24});
+            const refreshToken = jwt.sign({id: user.id}, config.JWT_REFRESH_SECRET!, {expiresIn:"7d"}
             );
 
             res.cookie("auth_token", token, {
@@ -117,9 +118,9 @@ export class AuthController {
                 return res.status(401).json({ message: "Refresh token required" });
             }
 
-            const payload = jwt.verify(refresh_token, process.env.USER_SERVICE_JWT_REFRESH_SECRET!) as any;
-            const token: String = jwt.sign({userId: payload.id}, process.env.USER_SERVICE_JWT_SECRET!, {expiresIn:60*60*24});
-            const refreshToken = jwt.sign({id: payload.id}, process.env.USER_SERVICE_JWT_REFRESH_SECRET!, {expiresIn:"7d"});
+            const payload = jwt.verify(refresh_token, config.JWT_REFRESH_SECRET!) as any;
+            const token: String = jwt.sign({userId: payload.id}, config.JWT_SECRET!, {expiresIn:60*60*24});
+            const refreshToken = jwt.sign({id: payload.id}, config.JWT_REFRESH_SECRET!, {expiresIn:"7d"});
 
             res.cookie("auth_token", token, {
                 secure: false,
@@ -260,8 +261,8 @@ export class AuthController {
                     message: 'Password incorrect',
                 });
             }
-            const token: String = jwt.sign({userId: user.id,}, process.env.USER_SERVICE_JWT_SECRET!, {expiresIn:60*60*24});
-            const refreshToken = jwt.sign({id: user.id}, process.env.USER_SERVICE_JWT_REFRESH_SECRET!, {expiresIn:"7d"}
+            const token: String = jwt.sign({userId: user.id,}, config.JWT_SECRET!, {expiresIn:60*60*24});
+            const refreshToken = jwt.sign({id: user.id}, config.JWT_REFRESH_SECRET!, {expiresIn:"7d"}
             );
 
             // res.cookie("auth_token", token, {

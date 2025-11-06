@@ -3,23 +3,22 @@ import path from 'path';
 import passport from 'passport'
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { config } from 'dotenv';
-import { fileURLToPath } from 'url';
 import { engine } from 'express-handlebars';
 import adminRoutes from './routes/AdminRoutes.js';
 import authRoutes from './routes/AuthRoutes.js';
 import profileRoutes from './routes/ProfileRoutes.js';
 import passportConfig from './middleware/passport.js';
 import { IsAdmin } from './middleware/isAdmin.js';
-import {connectDB} from "./config/db.js";
+import { connectDB } from "./config/db.js";
+import { config } from './config/config.js';
+import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const port = process.env.USER_SERVICE_PORT || '8080';
+const port = config.PORT;
 const corsOptions = {
-    origin: ['http://localhost:4200', 'http://localhost:3000', 'https://msametiz96.ru'],
+    origin: ['http://localhost:4200', 'http://localhost:3000', config.CLIENT_URL!],
     optionsSuccessStatus: 200,
     credentials: true,
 }

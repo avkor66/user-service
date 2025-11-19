@@ -19,8 +19,11 @@ const app = express();
 const port = config.PORT;
 const corsOptions = {
     origin: ['http://localhost:4200', 'http://localhost:3000', config.CLIENT_URL!],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     optionsSuccessStatus: 200,
     credentials: true,
+    preflightContinue: false
 }
 
 app.engine('.hbs', engine({extname: '.hbs'}));

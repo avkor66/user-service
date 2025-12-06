@@ -156,14 +156,16 @@ export class AuthController {
         try {
             const userData: IUserCreate = req.body;
             const emailExists = await UserService.isEmailExists(userData.email);
+            console.log('emailExists');
+            console.log(emailExists);
             if (emailExists) {
-                res.status(400).json({
+                return res.status(400).json({
                     success: false,
                     message: 'Email already exists'
                 });
             }
             const user: IUser = await UserService.createUser(userData);
-            res.status(201).json({
+            return res.status(201).json({
                 success: true,
                 message: 'User created',
                 user: {
@@ -317,6 +319,70 @@ export class AuthController {
                 path: '/',
                 time: 1
             })
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({
+                    success: false,
+                    message: error.message
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown error'
+                });
+            }
+        }
+
+    }
+
+    static async passwordForgot(req: Request, res: Response) {
+
+        try {
+            await UserService.passwordForgot(req.body.email);
+            return res.status(200).json({success: true, message: 'На электронную почту отправлена инструкция по восстановлению пароля'});
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({
+                    success: false,
+                    message: error.message
+                });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Unknown error'
+                });
+            }
+        }
+
+    }
+    static async passwordReset(req: Request, res: Response) {
+
+        try {
+            console.log('passwordReset');
+            console.log(req.body);
+            // console.log(req.params.token)
+            const password = req.body.password
+            const token = req.body.token || req.params.token;
+
+            const decode = await UserService.checkJwtToken(token);
+
+            console.log(decode);
+            if (!decode.success) {
+                return res.status(403).json({success: false, message: decode.message});
+            }
+
+            const email =  decode.email;
+
+            const user = await User.findOne({email})
+            if (user) {
+                user.set('password', password);
+                user.markModified('password');
+                await user.save()
+                return res.status(200).json({success: true, message: 'Пароль успешно сброшен'});
+
+            }
+            return res.status(404).json({success: false, message: 'Пользователь не найден'});
+
         } catch (error) {
             if (error instanceof Error) {
                 res.status(400).json({

@@ -26,7 +26,7 @@ export interface IUserCreate {
     lastName: string;
     firstName: string;
     middleName?: string;
-    birthDate: Date;
+    birthDate?: Date;
     email: string;
     password: string;
     role: 'user';

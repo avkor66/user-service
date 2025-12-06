@@ -20,7 +20,7 @@ export class ProfileService {
             firstName: user.firstName,
             lastName: user.lastName,
             middleName: user.middleName || '',
-            birthDate: ProfileService.dateEditor(user.birthDate, false),
+            birthDate: user.birthDate ? ProfileService.dateEditor(user.birthDate, false) : '',
             email: user.email,
             role: user.role,
             isAdmin: user.role === 'admin',

@@ -48,11 +48,18 @@ app.use((req, res, next) => {
     next()
 });
 
+
+
+
+
+
+
 app.get('/', (req, res) => res.redirect('/auth/signin'));
 app.use('/auth', cors(corsOptions), authRoutes);
 app.use('/profile', cors(corsOptions), passport.authenticate('jwt', {session: false}), profileRoutes);
 app.use('/admin', cors(corsOptions), passport.authenticate('jwt', {session: false}), IsAdmin.isAdmin, adminRoutes);
 app.get('/health_check', (req: Request, res: Response) => res.status(200).json({status: 'UserService Check OK'}));
+
 app.use((req, res) => {
     res.status(404).render('pages/errors/404', { title: 'Страница не найдена' });
 });

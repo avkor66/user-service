@@ -12,7 +12,11 @@
                 </li>
                 <li>
                     <div class="collapsible-header">
-                        Date of birth<span class="badge">{{user.birthDate}}</span>
+                        {{#if user.birthDate}}
+                            Date of birth<span class="badge">{{user.birthDate}}</span>
+                        {{else}}
+                            Date of birth<span class="badge">no data</span>
+                        {{/if}}
                     </div>
                 </li>
                 <li>

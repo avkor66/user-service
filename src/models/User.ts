@@ -8,7 +8,6 @@ const UserSchema = new Schema<IUser>({
     middleName: { type: String, trim: true, maxlength: [55, 'Не длиннее 55 символов'] },
     birthDate: {
         type: Date,
-        required: [true, 'Дата рождения обязательна'],
         validate: {
             validator: function(value: Date) {
                 const minAgeDate = new Date();
